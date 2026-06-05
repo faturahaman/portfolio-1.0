@@ -42,7 +42,7 @@ export function Navbar() {
     <>
       <nav className="sticky top-0 z-50 bg-white dark:bg-[#111111] border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <span className="text-xl font-bold tracking-tight">MRF.</span>
+          <span className="text-xl font-bold tracking-tight">Riffatur.io</span>
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
