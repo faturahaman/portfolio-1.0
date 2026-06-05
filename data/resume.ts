@@ -99,5 +99,8 @@ export const PROFILE = {
   title: "Website Developer",
   email: "faturahaman.r@gmail.com",
   linkedin: "https://linkedin.com/in/muhamad-riffa-faturahman-71ba5a279",
+  github: "https://github.com/faturahaman",
+  githubUsername: "faturahaman",
+  cv: "/CV_WEBDEVsS.pdf",
   summary: "Results-driven Web Developer with 1+ year of experience building modern web applications and digital solutions using Laravel, React, Next.js, JavaScript, PHP, MySQL, PostgreSQL, MongoDB, NestJS, and Docker.",
 }

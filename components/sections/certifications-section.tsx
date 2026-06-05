@@ -11,10 +11,10 @@ export function CertificationsSection() {
         {CERTIFICATIONS.map((cert) => (
           <div
             key={cert.name}
-            className="flex items-center justify-between py-4 border-b border-gray-100 dark:border-gray-800 last:border-0 group"
+            className="flex items-start sm:items-center justify-between gap-3 py-4 border-b border-gray-100 dark:border-gray-800 last:border-0 group"
           >
-            <div className="flex items-center gap-4">
-              <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-black dark:group-hover:bg-white transition-colors">
+            <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
+              <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-black dark:group-hover:bg-white transition-colors mt-0.5 sm:mt-0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="w-4 h-4 text-gray-500 dark:text-gray-400 group-hover:text-white dark:group-hover:text-black transition-colors"
@@ -26,12 +26,12 @@ export function CertificationsSection() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                 </svg>
               </div>
-              <div>
-                <p className="text-base font-medium">{cert.name}</p>
-                <p className="text-sm text-gray-400 dark:text-gray-500">{cert.issuer}</p>
+              <div className="min-w-0">
+                <p className="text-sm sm:text-base font-medium leading-snug">{cert.name}</p>
+                <p className="text-xs sm:text-sm text-gray-400 dark:text-gray-500 mt-0.5">{cert.issuer}</p>
               </div>
             </div>
-            <span className="text-sm text-gray-400 dark:text-gray-500 flex-shrink-0">{cert.year}</span>
+            <span className="text-xs sm:text-sm text-gray-400 dark:text-gray-500 flex-shrink-0 pt-0.5 sm:pt-0">{cert.year}</span>
           </div>
         ))}
       </div>

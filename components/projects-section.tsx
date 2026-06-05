@@ -117,7 +117,7 @@ function RepoCard({
 
         {/* Description */}
         <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed
-          line-clamp-2 mb-4 min-h-[2.5rem] max-w-[65%]">
+          line-clamp-2 mb-4 min-h-[2.5rem]">
           {repo.description ?? "No description provided."}
         </p>
 
@@ -142,7 +142,7 @@ function RepoCard({
         )}
 
         {/* Footer row */}
-        <div className="mt-auto flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
+        <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-400 dark:text-gray-500">
           {repo.language && (
             <span className="flex items-center gap-1.5">
               <span

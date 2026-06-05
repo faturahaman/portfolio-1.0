@@ -7,12 +7,12 @@ export function EducationSection() {
         Education
       </h2>
 
-      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
-        <div>
-          <h3 className="text-xl font-bold">{EDUCATION.degree}</h3>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">{EDUCATION.school}</p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+        <div className="min-w-0">
+          <h3 className="text-lg sm:text-xl font-bold leading-snug">{EDUCATION.degree}</h3>
+          <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm sm:text-base">{EDUCATION.school}</p>
         </div>
-        <div className="text-right flex-shrink-0">
+        <div className="sm:text-right flex-shrink-0">
           <p className="text-sm text-gray-400 dark:text-gray-500">Graduated {EDUCATION.year}</p>
           <p className="text-sm font-semibold mt-0.5">GPA {EDUCATION.gpa}</p>
         </div>
