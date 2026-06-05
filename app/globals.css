@@ -1,8 +1,18 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
+/* Tell Tailwind v4 to use .dark class for dark: variants */
+@variant dark (&:where(.dark, .dark *));
+
+/* ── Light / Dark CSS variables ── */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #242424;
+}
+
+.dark {
+  --background: #111111;
+  --foreground: #ededed;
 }
 
 @theme inline {
@@ -12,15 +22,23 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Georgia, serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Magic UI View Transition — animated theme toggle ── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html[data-magicui-theme-vt="active"]::view-transition-group(root) {
+  animation-duration: var(--magicui-theme-toggle-vt-duration);
 }
