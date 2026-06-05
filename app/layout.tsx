@@ -6,6 +6,10 @@ export const metadata: Metadata = {
   title: "Muhamad Riffa Faturahman — Web Developer",
   description:
     "Portfolio of Muhamad Riffa Faturahman, a results-driven Web Developer with experience in Laravel, React, Next.js, NestJS, and more.",
+  icons: {
+    icon: "/logo-no-bg.png",
+    apple: "/logo-no-bg.png",
+  },
 };
 
 export default function RootLayout({
