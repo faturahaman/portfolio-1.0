@@ -15,7 +15,10 @@ export const translations = {
   hero: {
     availableForWork: { en: 'Available for work', id: 'Siap untuk berkolaborasi' },
     title: { en: 'Muhamad Riffa\nFaturahman', id: 'Muhamad Riffa\nFaturahman' },
-    subtitle: { en: 'Website Developer', id: 'Web Developer' },
+    subtitle: { 
+      en: 'React & Next.js Web Developer | Full-Stack Developer | Freelance Available', 
+      id: 'Web Developer React & Next.js | Full-Stack | Freelance Tersedia' 
+    },
     bioShort: {
       en: 'Results-driven Web Developer with 1+ year of experience building modern web applications.',
       id: 'Web Developer yang passionate membangun aplikasi web modern dengan pengalaman 1+ tahun.',

@@ -122,6 +122,37 @@ const jsonLd = {
   },
 };
 
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "What services does Muhamad Riffa Faturahman offer?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Muhamad Riffa Faturahman offers full-stack web development services including React, Next.js, Laravel, NestJS development, REST API design, and database architecture using MySQL, MongoDB, and PostgreSQL.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What technologies does the web developer specialize in?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Specializations include React.js, Next.js, Laravel, NestJS, PHP, JavaScript, TypeScript, MySQL, MongoDB, PostgreSQL, REST APIs, Docker, and Git version control.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Is Muhamad Riffa Faturahman available for freelance projects?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes, Muhamad Riffa Faturahman is available for freelance web development projects. Contact via email at faturahaman.r@gmail.com or through LinkedIn.",
+      },
+    },
+  ],
+};
+
 // Critical CSS for above-the-fold content (inlined to prevent render-blocking)
 const criticalCSS = `
   :root {
@@ -187,6 +218,12 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        
+        {/* FAQ Schema for rich snippets */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
       </head>
       <body className="min-h-full flex flex-col">

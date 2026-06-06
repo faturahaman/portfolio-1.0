@@ -1,12 +1,51 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = "https://riffatur.com";
+  const now = new Date();
+
   return [
     {
-      url: "https://riffatur.com",
-      lastModified: new Date(),
+      url: baseUrl,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}#about`,
+      lastModified: now,
       changeFrequency: "monthly",
-      priority: 1,
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}#experience`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}#projects`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}#skills`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}#education`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}#certifications`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
     },
   ];
 }
