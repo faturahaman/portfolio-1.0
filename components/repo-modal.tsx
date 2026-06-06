@@ -1,39 +1,16 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { useGithubStore, type GithubRepo } from "@/store/github"
 import { X, Star, GitFork, ExternalLink, Globe } from "lucide-react"
+import { getCombinedAltText, altTexts } from "@/lib/alt-text"
+import { LANG_COLORS, timeAgo } from "@/lib/github-utils"
 
 interface RepoModalProps {
   repo: GithubRepo
   onClose: () => void
-}
-
-const LANG_COLORS: Record<string, string> = {
-  TypeScript: "#6b7280",
-  JavaScript: "#9ca3af",
-  PHP: "#6b7280",
-  Python: "#9ca3af",
-  Go: "#6b7280",
-  CSS: "#9ca3af",
-  HTML: "#6b7280",
-  Vue: "#9ca3af",
-  Rust: "#6b7280",
-  Java: "#9ca3af",
-}
-
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime()
-  const days = Math.floor(diff / 86400000)
-  if (days === 0) return "today"
-  if (days === 1) return "yesterday"
-  if (days < 30) return `${days} days ago`
-  const months = Math.floor(days / 30)
-  if (months < 12) return `${months} month${months > 1 ? "s" : ""} ago`
-  const years = Math.floor(months / 12)
-  return `${years} year${years > 1 ? "s" : ""} ago`
 }
 
 export function RepoModal({ repo, onClose }: RepoModalProps) {
@@ -43,65 +20,67 @@ export function RepoModal({ repo, onClose }: RepoModalProps) {
   const loading = readmeLoading[key]
   // undefined = not fetched yet, null = fetched but no image, string = url
   const coverImage = coverImageCache[key]
-  const [coverError, setCoverError] = useState(false)
+  const [failedCoverImage, setFailedCoverImage] = useState<string | null>(null)
+  const [isOpen, setIsOpen] = useState(false)
 
   const overlayRef = useRef<HTMLDivElement>(null)
-  const panelRef = useRef<HTMLDivElement>(null)
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleClose = useCallback(() => {
+    if (closeTimerRef.current) return
+    setIsOpen(false)
+    closeTimerRef.current = setTimeout(onClose, 300)
+  }, [onClose])
 
   useEffect(() => {
     fetchReadme(repo)
   }, [repo, fetchReadme])
 
-  // Reset cover error when repo changes
-  useEffect(() => {
-    setCoverError(false)
-  }, [key])
-
   // Lock body scroll
   useEffect(() => {
     document.body.style.overflow = "hidden"
-    return () => { document.body.style.overflow = "" }
+    return () => {
+      document.body.style.overflow = ""
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current)
+    }
   }, [])
 
   // Close on Escape
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose() }
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") handleClose() }
     window.addEventListener("keydown", handler)
     return () => window.removeEventListener("keydown", handler)
-  }, [onClose])
+  }, [handleClose])
 
-  // Slide-in animation
   useEffect(() => {
-    const panel = panelRef.current
-    if (!panel) return
-    panel.animate(
-      [
-        { transform: "translateY(40px)", opacity: "0" },
-        { transform: "translateY(0)", opacity: "1" },
-      ],
-      { duration: 300, easing: "cubic-bezier(0.16,1,0.3,1)", fill: "forwards" }
-    )
+    const frame = requestAnimationFrame(() => setIsOpen(true))
+    return () => cancelAnimationFrame(frame)
   }, [])
 
   const handleOverlayClick = (e: React.MouseEvent) => {
-    if (e.target === overlayRef.current) onClose()
+    if (e.target === overlayRef.current) handleClose()
   }
 
   const langColor = repo.language ? LANG_COLORS[repo.language] ?? "#8b949e" : null
-  const showCover = coverImage && !coverError
+  const showCover = coverImage && coverImage !== failedCoverImage
 
   return (
     <div
       ref={overlayRef}
       onClick={handleOverlayClick}
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 dark:bg-black/60 backdrop-blur-sm"
+      className={`fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 dark:bg-black/60 backdrop-blur-sm transition-opacity duration-300 ease-out motion-reduce:transition-none ${
+        isOpen ? "opacity-100" : "opacity-0"
+      }`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
     >
       <div
-        ref={panelRef}
-        className="relative w-full sm:max-w-4xl max-h-[92vh] sm:max-h-[90vh] bg-white dark:bg-[#1a1a1a] rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden opacity-0"
+        className={`relative w-full sm:max-w-4xl max-h-[92vh] sm:max-h-[90vh] bg-white dark:bg-[#1a1a1a] rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden will-change-transform transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+          isOpen
+            ? "translate-y-0 scale-100 opacity-100"
+            : "translate-y-8 sm:translate-y-4 sm:scale-[0.98] opacity-0"
+        }`}
       >
         {/* ── Cover Image ── */}
         {showCover ? (
@@ -109,16 +88,16 @@ export function RepoModal({ repo, onClose }: RepoModalProps) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={coverImage}
-              alt={`${repo.name} preview`}
+              alt={getCombinedAltText(altTexts.repositoryPreview(repo.name))}
               className="w-full h-full object-cover"
-              onError={() => setCoverError(true)}
+              onError={() => setFailedCoverImage(coverImage)}
             />
             {/* gradient overlay so header text stays readable */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
             {/* Close button — floating on cover */}
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
               aria-label="Close modal"
             >
@@ -151,7 +130,7 @@ export function RepoModal({ repo, onClose }: RepoModalProps) {
             )}
 
             {/* Meta row */}
-            <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-gray-500 dark:text-gray-300">
               {repo.language && (
                 <span className="flex items-center gap-1.5">
                   <span
@@ -178,7 +157,7 @@ export function RepoModal({ repo, onClose }: RepoModalProps) {
                 {repo.topics.map((t) => (
                   <span
                     key={t}
-                    className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2.5 py-0.5 rounded-full"
+                    className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2.5 py-0.5 rounded-full"
                   >
                     {t}
                   </span>
@@ -190,7 +169,7 @@ export function RepoModal({ repo, onClose }: RepoModalProps) {
           {/* Close button — only show here when there's no cover image */}
           {!showCover && (
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-black dark:hover:text-white transition-colors mt-0.5"
               aria-label="Close modal"
             >

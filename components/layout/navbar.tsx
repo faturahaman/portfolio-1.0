@@ -4,18 +4,21 @@ import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { Menu, X } from "lucide-react"
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler"
+import { LanguageSwitcher } from "@/components/ui/language-switcher"
+import { useLanguage } from "@/lib/language-context"
 import { PROFILE } from "@/data/resume"
 
 const NAV_LINKS = [
-  { href: "#about", label: "About" },
-  { href: "#experience", label: "Experience" },
-  { href: "#projects", label: "Projects" },
-  { href: "#skills", label: "Skills" },
-  { href: "#certifications", label: "Certifications" },
+  { href: "#about", labelKey: "nav.about" },
+  { href: "#experience", labelKey: "nav.experience" },
+  { href: "#projects", labelKey: "nav.projects" },
+  { href: "#skills", labelKey: "nav.skills" },
+  { href: "#certifications", labelKey: "nav.certifications" },
 ]
 
 export function Navbar() {
   const { setTheme, resolvedTheme } = useTheme()
+  const { t } = useLanguage()
   const [mounted, setMounted] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -45,14 +48,14 @@ export function Navbar() {
           <span className="text-xl font-bold tracking-tight">Riffatur.io</span>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
-            {NAV_LINKS.map(({ href, label }) => (
+          <div className="hidden md:flex items-center gap-6 text-sm text-gray-600 dark:text-gray-300">
+            {NAV_LINKS.map(({ href, labelKey }) => (
               <a
                 key={href}
                 href={href}
                 className="hover:text-black dark:hover:text-white transition-colors"
               >
-                {label}
+                {t(labelKey)}
               </a>
             ))}
 
@@ -60,30 +63,36 @@ export function Navbar() {
               href={`mailto:${PROFILE.email}`}
               className="bg-black dark:bg-white text-white dark:text-black text-sm px-4 py-1.5 rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
             >
-              Hire me
+              {t("nav.hireMe")}
             </a>
 
-            {mounted && (
-              <AnimatedThemeToggler
-                variant="circle"
-                duration={500}
-                theme={currentTheme}
-                onThemeChange={(t) => setTheme(t)}
-                className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-black dark:hover:text-white transition-colors"
-              />
-            )}
+            <div className="flex items-center gap-3">
+              <LanguageSwitcher />
+              {mounted && (
+                <AnimatedThemeToggler
+                  variant="circle"
+                  duration={500}
+                  theme={currentTheme}
+                  onThemeChange={(t) => setTheme(t)}
+                  className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-black dark:hover:text-white transition-colors"
+                />
+              )}
+            </div>
           </div>
 
-          {/* Mobile right side: theme toggler + hamburger */}
+          {/* Mobile right side: language + theme toggler + hamburger */}
           <div className="flex md:hidden items-center gap-2">
             {mounted && (
-              <AnimatedThemeToggler
-                variant="circle"
-                duration={500}
-                theme={currentTheme}
-                onThemeChange={(t) => setTheme(t)}
-                className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-black dark:hover:text-white transition-colors"
-              />
+              <>
+                <LanguageSwitcher />
+                <AnimatedThemeToggler
+                  variant="circle"
+                  duration={500}
+                  theme={currentTheme}
+                  onThemeChange={(t) => setTheme(t)}
+                  className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-black dark:hover:text-white transition-colors"
+                />
+              </>
             )}
             <button
               onClick={() => setMenuOpen((v) => !v)}
@@ -113,14 +122,14 @@ export function Navbar() {
         }`}
       >
         <div className="px-4 py-4 flex flex-col gap-1">
-          {NAV_LINKS.map(({ href, label }) => (
+          {NAV_LINKS.map(({ href, labelKey }) => (
             <a
               key={href}
               href={href}
               onClick={closeMenu}
               className="text-base font-medium text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white py-3 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
             >
-              {label}
+              {t(labelKey)}
             </a>
           ))}
           <div className="pt-2 pb-1">
@@ -129,7 +138,7 @@ export function Navbar() {
               onClick={closeMenu}
               className="block w-full text-center bg-black dark:bg-white text-white dark:text-black text-sm font-medium px-4 py-3 rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
             >
-              Hire me
+              {t("nav.hireMe")}
             </a>
           </div>
         </div>

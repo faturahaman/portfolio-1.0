@@ -1,42 +1,25 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, lazy, Suspense } from "react"
 import { useGithubStore, type GithubRepo } from "@/store/github"
-import { RepoModal } from "@/components/repo-modal"
 import { Star, GitFork, AlertCircle, RefreshCw, Globe, ChevronLeft, ChevronRight } from "lucide-react"
+import { useLanguage } from "@/lib/language-context"
+import { LANG_COLORS, timeAgo } from "@/lib/github-utils"
 
-const LANG_COLORS: Record<string, string> = {
-  TypeScript: "#6b7280",
-  JavaScript: "#9ca3af",
-  PHP: "#6b7280",
-  Python: "#9ca3af",
-  Go: "#6b7280",
-  CSS: "#9ca3af",
-  HTML: "#6b7280",
-  Vue: "#9ca3af",
-  Rust: "#6b7280",
-  Java: "#9ca3af",
-}
-
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime()
-  const days = Math.floor(diff / 86400000)
-  if (days === 0) return "today"
-  if (days === 1) return "yesterday"
-  if (days < 30) return `${days}d ago`
-  const months = Math.floor(days / 30)
-  if (months < 12) return `${months}mo ago`
-  const years = Math.floor(months / 12)
-  return `${years}y ago`
-}
+// Dynamically import RepoModal only when needed to reduce initial bundle
+const RepoModal = lazy(() =>
+  import("@/components/repo-modal").then((mod) => ({ default: mod.RepoModal }))
+)
 
 /** Card — cover image as background fading right→left */
 function RepoCard({
   repo,
   onClick,
+  t,
 }: {
   repo: GithubRepo
   onClick: () => void
+  t: (key: string) => string
 }) {
   const { coverImageCache, readmeCache, fetchReadme } = useGithubStore()
   const key = repo.full_name
@@ -78,6 +61,7 @@ function RepoCard({
             className="absolute inset-0 w-full h-full object-cover object-right
               transition-transform duration-500 group-hover:scale-105"
             onError={() => setImgError(true)}
+            loading="lazy"
           />
           {/* Gradient overlay — light mode */}
           <div
@@ -116,25 +100,25 @@ function RepoCard({
         </div>
 
         {/* Description */}
-        <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed
+        <p className="text-sm text-gray-500 dark:text-gray-300 leading-relaxed
           line-clamp-2 mb-4 min-h-[2.5rem]">
-          {repo.description ?? "No description provided."}
+          {repo.description ?? t("projects.noDescription")}
         </p>
 
         {/* Topics */}
         {repo.topics.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-3">
-            {repo.topics.slice(0, 3).map((t) => (
+            {repo.topics.slice(0, 3).map((topic) => (
               <span
-                key={t}
+                key={topic}
                 className="text-[11px] bg-gray-100/90 dark:bg-gray-700/50
-                  text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full"
+                  text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full"
               >
-                {t}
+                {topic}
               </span>
             ))}
             {repo.topics.length > 3 && (
-              <span className="text-[11px] text-gray-400 dark:text-gray-500">
+              <span className="text-[11px] text-gray-500 dark:text-gray-400">
                 +{repo.topics.length - 3}
               </span>
             )}
@@ -142,7 +126,7 @@ function RepoCard({
         )}
 
         {/* Footer row */}
-        <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-400 dark:text-gray-500">
+        <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
           {repo.language && (
             <span className="flex items-center gap-1.5">
               <span
@@ -172,13 +156,13 @@ function RepoCard({
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               className="inline-flex items-center gap-1.5 text-[11px] font-medium
-                text-gray-600 dark:text-gray-400
+                text-gray-600 dark:text-gray-300
                 bg-gray-100 dark:bg-gray-800
                 px-2.5 py-1 rounded-full
                 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               <Globe className="w-3 h-3" />
-              Live site
+              {t("projects.liveSite")}
             </a>
           </div>
         )}
@@ -188,6 +172,7 @@ function RepoCard({
 }
 
 export function ProjectsSection() {
+  const { t } = useLanguage()
   const { repos, reposFetched, reposLoading, reposError, fetchRepos } = useGithubStore()
   const [selectedRepo, setSelectedRepo] = useState<GithubRepo | null>(null)
   const [page, setPage] = useState(1)
@@ -224,11 +209,11 @@ export function ProjectsSection() {
   return (
     <section id="projects" className="py-16 border-b border-gray-200 dark:border-gray-800">
       <div className="flex items-baseline justify-between mb-10">
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
-          Projects
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+          {t("projects.title")}
         </h2>
         {reposFetched && repos.length > 0 && (
-          <span className="text-xs text-gray-400 dark:text-gray-500">
+          <span className="text-xs text-gray-500 dark:text-gray-400">
             {start + 1}–{Math.min(start + PER_PAGE, repos.length)} of {repos.length} repos
           </span>
         )}
@@ -282,6 +267,7 @@ export function ProjectsSection() {
                 key={repo.id}
                 repo={repo}
                 onClick={() => setSelectedRepo(repo)}
+                t={t}
               />
             ))}
           </div>
@@ -351,9 +337,11 @@ export function ProjectsSection() {
         </>
       )}
 
-      {/* Modal */}
+      {/* Modal — wrapped in Suspense for lazy loading */}
       {selectedRepo && (
-        <RepoModal repo={selectedRepo} onClose={() => setSelectedRepo(null)} />
+        <Suspense fallback={null}>
+          <RepoModal repo={selectedRepo} onClose={() => setSelectedRepo(null)} />
+        </Suspense>
       )}
     </section>
   )

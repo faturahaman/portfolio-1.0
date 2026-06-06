@@ -1,0 +1,539 @@
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+[browser] Image with src "https://avatars.githubusercontent.com/faturahaman?v=4" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+[browser] Image with src "https://avatars.githubusercontent.com/faturahaman?v=4" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+[browser] Image with src "https://avatars.githubusercontent.com/faturahaman?v=4" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+[browser] Image with src "https://avatars.githubusercontent.com/faturahaman?v=4" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+[browser] Image with src "https://avatars.githubusercontent.com/faturahaman?v=4" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+[browser] Image with src "https://avatars.githubusercontent.com/faturahaman?v=4" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+⚠ ./app/globals.css:2561:8
+Parsing CSS source code failed
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+'moz-selection' is not recognized as a valid pseudo-element. Did you mean ':moz-selection' (pseudo-class) or is this a typo?
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:2561:8
+  [90m2559 |[0m   color: #e8e8e8;
+  [90m2560 |[0m }
+[31m[1m>[0m [90m2561 |[0m .dark ::moz-selection {
+  [90m     |[0m        [31m[1m^[0m
+  [90m2562 |[0m   background-color: #[35m404040[0m;
+  [90m2563 |[0m   color: #e8e8e8;
+  [90m2564 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+[browser] Image with src "https://avatars.githubusercontent.com/faturahaman?v=4" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes

@@ -135,6 +135,7 @@ export const AnimatedThemeToggler = ({
   ...props
 }: AnimatedThemeTogglerProps) => {
   const shape = variant ?? "circle"
+  const transitionDuration = Math.max(duration, 620)
   const isControlled = theme !== undefined
   const [internalIsDark, setInternalIsDark] = useState(false)
   const isDark = isControlled ? theme === "dark" : internalIsDark
@@ -161,6 +162,10 @@ export const AnimatedThemeToggler = ({
   const toggleTheme = useCallback(() => {
     const button = buttonRef.current
     if (!button) return
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches
 
     const viewportWidth = window.visualViewport?.width ?? window.innerWidth
     const viewportHeight = window.visualViewport?.height ?? window.innerHeight
@@ -192,7 +197,7 @@ export const AnimatedThemeToggler = ({
       }
     }
 
-    if (typeof document.startViewTransition !== "function") {
+    if (prefersReducedMotion || typeof document.startViewTransition !== "function") {
       applyTheme()
       return
     }
@@ -210,7 +215,7 @@ export const AnimatedThemeToggler = ({
     root.dataset.magicuiThemeVt = "active"
     root.style.setProperty(
       "--magicui-theme-toggle-vt-duration",
-      `${duration}ms`
+      `${transitionDuration}ms`
     )
     root.style.setProperty("--magicui-theme-vt-clip-from", clipPath[0])
     const cleanup = () => {
@@ -234,15 +239,15 @@ export const AnimatedThemeToggler = ({
         document.documentElement.animate(
           { clipPath },
           {
-            duration,
-            easing: shape === "star" ? "linear" : "ease-in-out",
+            duration: transitionDuration,
+            easing: shape === "star" ? "linear" : "cubic-bezier(0.22,1,0.36,1)",
             fill: "forwards",
             pseudoElement: "::view-transition-new(root)",
           }
         )
       })
     }
-  }, [shape, fromCenter, duration, isDark, isControlled, onThemeChange])
+  }, [shape, fromCenter, transitionDuration, isDark, isControlled, onThemeChange])
 
   return (
     <button

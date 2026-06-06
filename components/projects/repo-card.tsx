@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Star, GitFork, Globe } from "lucide-react"
 import { useGithubStore, type GithubRepo } from "@/store/github"
 import { LANG_COLORS, timeAgo } from "@/lib/github-utils"
+import { getCombinedAltText, altTexts } from "@/lib/alt-text"
 
 interface RepoCardProps {
   repo: GithubRepo
@@ -64,8 +65,7 @@ export function RepoCard({ repo, onClick }: RepoCardProps) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={coverImage!}
-            alt=""
-            aria-hidden="true"
+            alt={getCombinedAltText(altTexts.repositoryBackground(repo.name))}
             className="
               absolute inset-0
               w-full h-full
@@ -74,6 +74,7 @@ export function RepoCard({ repo, onClick }: RepoCardProps) {
               group-hover:scale-105
             "
             onError={() => setImgError(true)}
+            loading="lazy"
           />
 
           <div
@@ -120,7 +121,7 @@ export function RepoCard({ repo, onClick }: RepoCardProps) {
               text-[10px]
               capitalize
               border border-gray-200 dark:border-gray-700
-              text-gray-400 dark:text-gray-500
+              text-gray-500 dark:text-gray-400
               bg-white/80 dark:bg-[#161616]/80
             "
           >
@@ -132,7 +133,7 @@ export function RepoCard({ repo, onClick }: RepoCardProps) {
         <p
           className="
             text-sm
-            text-gray-500 dark:text-gray-400
+            text-gray-500 dark:text-gray-300
             leading-relaxed
             line-clamp-2
             h-[40px]
@@ -156,7 +157,7 @@ export function RepoCard({ repo, onClick }: RepoCardProps) {
                     bg-gray-100/90
                     dark:bg-gray-700/50
                     text-gray-600
-                    dark:text-gray-400
+                    dark:text-gray-300
                   "
                 >
                   {topic}
@@ -164,7 +165,7 @@ export function RepoCard({ repo, onClick }: RepoCardProps) {
               ))}
 
               {repo.topics.length > 3 && (
-                <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                <span className="text-[11px] text-gray-500 dark:text-gray-400">
                   +{repo.topics.length - 3}
                 </span>
               )}
@@ -174,7 +175,7 @@ export function RepoCard({ repo, onClick }: RepoCardProps) {
 
         {/* Footer */}
         <div className="mt-auto">
-          <div className="flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
+          <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
             {repo.language && (
               <span className="flex items-center gap-1.5">
                 <span
@@ -216,7 +217,7 @@ export function RepoCard({ repo, onClick }: RepoCardProps) {
                   rounded-full
                   text-[11px]
                   font-medium
-                  text-gray-600 dark:text-gray-400
+                  text-gray-600 dark:text-gray-300
                   bg-gray-100 dark:bg-gray-800
                   hover:bg-gray-200 dark:hover:bg-gray-700
                   transition-colors

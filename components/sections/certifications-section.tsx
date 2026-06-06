@@ -1,40 +1,40 @@
-import { CERTIFICATIONS } from "@/data/resume"
+"use client"
+
+import { lazy, Suspense } from "react"
+import { useLanguage } from "@/lib/language-context"
+
+// Lazy-load the carousel — it's below the fold and pulls in embla-carousel
+const CertificationsCarousel = lazy(() =>
+  import("./certifications-carousel").then((mod) => ({
+    default: mod.CertificationsCarousel,
+  }))
+)
 
 export function CertificationsSection() {
+  const { t } = useLanguage()
+
   return (
     <section id="certifications" className="py-16 border-b border-gray-200 dark:border-gray-800">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-10">
-        Certifications
+      <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-10">
+        {t("certifications.title")}
       </h2>
 
-      <div className="space-y-4">
-        {CERTIFICATIONS.map((cert) => (
-          <div
-            key={cert.name}
-            className="flex items-start sm:items-center justify-between gap-3 py-4 border-b border-gray-100 dark:border-gray-800 last:border-0 group"
-          >
-            <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-black dark:group-hover:bg-white transition-colors mt-0.5 sm:mt-0">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-4 h-4 text-gray-500 dark:text-gray-400 group-hover:text-white dark:group-hover:text-black transition-colors"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                </svg>
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm sm:text-base font-medium leading-snug">{cert.name}</p>
-                <p className="text-xs sm:text-sm text-gray-400 dark:text-gray-500 mt-0.5">{cert.issuer}</p>
-              </div>
+      <Suspense fallback={
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="animate-pulse rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3 h-28"
+            >
+              <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800" />
+              <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-4/5" />
+              <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-1/2" />
             </div>
-            <span className="text-xs sm:text-sm text-gray-400 dark:text-gray-500 flex-shrink-0 pt-0.5 sm:pt-0">{cert.year}</span>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      }>
+        <CertificationsCarousel />
+      </Suspense>
     </section>
   )
 }

@@ -1,8 +1,16 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { LanguageProvider } from "@/lib/language-context";
+import { ScrollAnimator } from "@/components/scroll-animator";
 
 const BASE_URL = "https://riffatur.com";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -42,6 +50,9 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
     },
   },
   openGraph: {
@@ -51,21 +62,24 @@ export const metadata: Metadata = {
     description:
       "Results-driven Web Developer with 1+ year of experience. Specializes in Laravel, React, Next.js, NestJS, PHP, and JavaScript. 26+ projects delivered.",
     siteName: "Muhamad Riffa Faturahman Portfolio",
+    locale: "en_US",
     images: [
       {
         url: `${BASE_URL}/logo-no-bg.png`,
         width: 512,
         height: 512,
         alt: "Muhamad Riffa Faturahman — Web Developer",
+        type: "image/png",
       },
     ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Muhamad Riffa Faturahman — Web Developer",
     description:
       "Results-driven Web Developer. Specializes in Laravel, React, Next.js, NestJS, PHP, and JavaScript.",
     images: [`${BASE_URL}/logo-no-bg.png`],
+    creator: "@faturahaman",
   },
   icons: {
     icon: "/logo-no-bg.png",
@@ -102,7 +116,41 @@ const jsonLd = {
     "Git",
   ],
   email: "faturahaman.r@gmail.com",
+  worksFor: {
+    "@type": "Organization",
+    name: "Self-employed",
+  },
 };
+
+// Critical CSS for above-the-fold content (inlined to prevent render-blocking)
+const criticalCSS = `
+  :root {
+    --background: #ffffff;
+    --foreground: #242424;
+  }
+  .dark {
+    --background: #111111;
+    --foreground: #ededed;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: "Times New Roman", Times, serif;
+    margin: 0;
+    padding: 0;
+  }
+  html {
+    scroll-behavior: smooth;
+    height: 100%;
+    scrollbar-gutter: stable;
+  }
+  .min-h-full {
+    min-height: 100vh;
+  }
+  .min-h-screen {
+    min-height: 100vh;
+  }
+`;
 
 export default function RootLayout({
   children,
@@ -116,20 +164,43 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* Inline critical CSS to prevent render-blocking */}
+        <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
+
+        {/* Preload hero image for LCP optimization */}
+        <link
+          rel="preload"
+          as="image"
+          href="https://avatars.githubusercontent.com/faturahaman?v=4"
+          fetchPriority="high"
+        />
+
+        {/* Preload favicon */}
+        <link rel="preload" as="image" href="/logo-no-bg.png" type="image/png" />
+
+        {/* DNS prefetch for external resources */}
+        <link rel="dns-prefetch" href="https://avatars.githubusercontent.com" />
+        <link rel="dns-prefetch" href="https://github.com" />
+        <link rel="preconnect" href="https://avatars.githubusercontent.com" crossOrigin="anonymous" />
+
+        {/* JSON-LD structured data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body className="min-h-full flex flex-col">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange={false}
-        >
-          {children}
-        </ThemeProvider>
+        <LanguageProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange={false}
+          >
+            <ScrollAnimator />
+            {children}
+          </ThemeProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

@@ -19,17 +19,102 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: "Times New Roman", Times, serif;
-  --font-mono: var(--font-geist-mono);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   CRITICAL CSS: Above-the-fold styles (inlined in layout.tsx)
+   ═══════════════════════════════════════════════════════════════ */
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: "Times New Roman", Times, serif;
+  margin: 0;
+  padding: 0;
 }
 
 html {
   scroll-behavior: smooth;
+  height: 100%;
+}
+
+/* Prevent layout shift from scrollbar */
+html {
+  scrollbar-gutter: stable;
+}
+
+.min-h-full {
+  min-height: 100vh;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATION & SCROLL EFFECTS (lazy-loaded)
+   ═══════════════════════════════════════════════════════════════ */
+
+.scroll-fade-section {
+  opacity: 0;
+  transform: translate3d(0, -40px, 0) scale(0.95);
+  transform-origin: center;
+  will-change: opacity, transform;
+}
+
+/* Native View Transitions API (Chrome 115+) */
+@supports (animation-timeline: view()) {
+  .scroll-fade-section {
+    animation: scroll-center-fade linear both;
+    animation-timeline: view();
+    animation-range: entry -5% exit 105%;
+  }
+}
+
+/* Fallback for browsers without View Transitions support */
+.scroll-fade-in {
+  animation: scroll-fade-in-fallback 1s ease-out forwards;
+}
+
+.scroll-fade-out {
+  animation: scroll-fade-out-fallback 1s ease-in forwards;
+}
+
+@keyframes scroll-center-fade {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -40px, 0) scale(0.95);
+  }
+
+  38%,
+  62% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes scroll-fade-in-fallback {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -40px, 0) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes scroll-fade-out-fallback {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, -40px, 0) scale(0.95);
+  }
 }
 
 /* ── Magic UI View Transition — animated theme toggle ── */
@@ -37,8 +122,58 @@ html {
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+  backface-visibility: hidden;
 }
 
 html[data-magicui-theme-vt="active"]::view-transition-group(root) {
   animation-duration: var(--magicui-theme-toggle-vt-duration);
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  isolation: isolate;
+}
+
+html[data-magicui-theme-vt="active"]::view-transition-image-pair(root) {
+  isolation: isolate;
+  will-change: clip-path;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .scroll-fade-section {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ── Text Selection Styling (Monochrome with theme support) ── */
+::selection {
+  background-color: #d0d0d0;
+  color: #1a1a1a;
+}
+
+::-moz-selection {
+  background-color: #d0d0d0;
+  color: #1a1a1a;
+}
+
+.dark ::selection {
+  background-color: #404040;
+  color: #e8e8e8;
+}
+
+.dark ::-moz-selection {
+  background-color: #404040;
+  color: #e8e8e8;
 }
