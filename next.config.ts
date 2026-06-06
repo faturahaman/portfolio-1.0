@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
     // when the avatar actually changes.
     minimumCacheTTL: 31536000,
     formats: ["image/webp", "image/avif"],
+    qualities: [75, 85],
   },
 
   // ── Performance: enable compression ──
