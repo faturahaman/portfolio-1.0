@@ -15,7 +15,7 @@ export function CertificationsSection() {
 
   return (
     <section id="certifications" className="py-16 border-b border-gray-200 dark:border-gray-800">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-10">
+      <h2 className="section-heading-reveal text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-10">
         {t("certifications.title")}
       </h2>
 

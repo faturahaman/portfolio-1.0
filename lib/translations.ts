@@ -76,7 +76,7 @@ export const translations = {
     getInTouch: { en: 'Get in touch', id: 'Hubungi Saya' },
   },
   footer: {
-    copyright: { en: '© 2024 Muhamad Riffa Faturahman. All rights reserved.', id: '© 2024 Muhamad Riffa Faturahman. Semua hak dilindungi.' },
+    copyright: { en: 'Muhamad Riffa Faturahman. All rights reserved.', id: 'Muhamad Riffa Faturahman. Semua hak dilindungi.' },
   },
 } as const
 

@@ -50,7 +50,7 @@ const EXPERIENCE_ID: ExperienceEntry[] = [
 
 function ExperienceItem({ entry }: { entry: ExperienceEntry }) {
   return (
-    <article>
+    <article className="reveal-child">
       <div className="flex flex-col gap-0.5 mb-1">
         <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
           <h3 className="text-lg sm:text-xl font-bold leading-snug">{entry.title}</h3>
@@ -93,7 +93,7 @@ function ExperienceItem({ entry }: { entry: ExperienceEntry }) {
         {entry.tags.map((tag) => (
           <span
             key={tag}
-            className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-full"
+            className="tag-item text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-full"
           >
             {tag}
           </span>
@@ -109,7 +109,7 @@ export function ExperienceSection() {
 
   return (
     <section id="experience" className="py-16 border-b border-gray-200 dark:border-gray-800">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-10">
+      <h2 className="section-heading-reveal text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-10">
         {t("experience.title")}
       </h2>
       <div className="space-y-12 sm:space-y-14">

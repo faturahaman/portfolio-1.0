@@ -46,8 +46,14 @@ export function HeroSection() {
   return (
     <section
       id="about"
-      className="pt-16 sm:pt-20 pb-16 border-b border-gray-200 dark:border-gray-800"
+      className="relative pt-16 sm:pt-20 pb-16 border-b border-gray-200 dark:border-gray-800 overflow-hidden"
     >
+      {/* CSS-only floating particles — GPU composited, zero JS */}
+      <span aria-hidden="true" className="hero-particle text-gray-300 dark:text-gray-700" style={{ width: 6, height: 6, left: '8%', bottom: '30%', animationDuration: '6s', animationDelay: '0s' }} />
+      <span aria-hidden="true" className="hero-particle text-gray-300 dark:text-gray-700" style={{ width: 4, height: 4, left: '20%', bottom: '20%', animationDuration: '8s', animationDelay: '1.5s' }} />
+      <span aria-hidden="true" className="hero-particle text-gray-400 dark:text-gray-600" style={{ width: 5, height: 5, left: '75%', bottom: '25%', animationDuration: '7s', animationDelay: '0.8s' }} />
+      <span aria-hidden="true" className="hero-particle text-gray-300 dark:text-gray-700" style={{ width: 3, height: 3, left: '88%', bottom: '40%', animationDuration: '9s', animationDelay: '2.2s' }} />
+      <span aria-hidden="true" className="hero-particle text-gray-400 dark:text-gray-600" style={{ width: 5, height: 5, left: '50%', bottom: '15%', animationDuration: '7.5s', animationDelay: '3s' }} />
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-8 sm:gap-10">
 
         {/* Photo — top center on mobile */}

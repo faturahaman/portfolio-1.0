@@ -69,7 +69,6 @@ export const EDUCATION = {
   degree: "Software Engineering and Game Development",
   school: "SMK Analis Kimia Nusa Bangsa",
   year: "2026",
-  gpa: "3.73",
 }
 
 export interface Certification {

@@ -14,10 +14,10 @@ import { CtaSection } from "@/components/sections/cta-section"
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white dark:bg-[#111111] text-[#242424] dark:text-[#ededed] font-sans transition-colors duration-300">
+    <div className="relative z-10 min-h-screen bg-white/90 dark:bg-[#111111]/90 text-[#242424] dark:text-[#ededed] font-sans transition-colors duration-300">
       <Navbar />
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6">
+      <main className="relative max-w-4xl mx-auto px-4 sm:px-6">
         <div className="scroll-fade-section">
           <HeroSection />
         </div>

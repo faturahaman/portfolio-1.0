@@ -56,6 +56,54 @@ html {
    ANIMATION & SCROLL EFFECTS (lazy-loaded)
    ═══════════════════════════════════════════════════════════════ */
 
+/* ── Scroll Progress Bar ── */
+@property --scroll-pct {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 0%;
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: 9999;
+    background: linear-gradient(
+      to right,
+      transparent,
+      #888 20%,
+      #555 50%,
+      #888 80%,
+      transparent
+    );
+    transform-origin: left center;
+    transform: scaleX(0);
+    animation: scroll-progress-grow linear both;
+    animation-timeline: scroll(root);
+    will-change: transform;
+  }
+
+  .dark .scroll-progress-bar {
+    background: linear-gradient(
+      to right,
+      transparent,
+      #aaa 20%,
+      #eee 50%,
+      #aaa 80%,
+      transparent
+    );
+  }
+
+  @keyframes scroll-progress-grow {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+}
+
+/* ── Section fade (view-timeline) ── */
 .scroll-fade-section {
   opacity: 0;
   transform: translate3d(0, -40px, 0) scale(0.95);
@@ -117,6 +165,208 @@ html {
   }
 }
 
+/* ── Parallax background blobs ── */
+.parallax-scene {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.parallax-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0;
+  will-change: transform;
+}
+
+/* Light mode blobs */
+.parallax-blob-1 {
+  width: clamp(280px, 40vw, 520px);
+  height: clamp(280px, 40vw, 520px);
+  top: -10%;
+  left: -10%;
+  background: radial-gradient(circle, rgba(180,180,180,0.35) 0%, transparent 70%);
+  opacity: 0.6;
+}
+
+.parallax-blob-2 {
+  width: clamp(220px, 32vw, 420px);
+  height: clamp(220px, 32vw, 420px);
+  top: 40%;
+  right: -8%;
+  background: radial-gradient(circle, rgba(140,140,140,0.28) 0%, transparent 70%);
+  opacity: 0.5;
+}
+
+.parallax-blob-3 {
+  width: clamp(200px, 28vw, 380px);
+  height: clamp(200px, 28vw, 380px);
+  bottom: 10%;
+  left: 20%;
+  background: radial-gradient(circle, rgba(160,160,160,0.22) 0%, transparent 70%);
+  opacity: 0.45;
+}
+
+/* Dark mode blob overrides */
+.dark .parallax-blob-1 {
+  background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+  opacity: 0.8;
+}
+.dark .parallax-blob-2 {
+  background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+  opacity: 0.7;
+}
+.dark .parallax-blob-3 {
+  background: radial-gradient(circle, rgba(255,255,255,0.025) 0%, transparent 70%);
+  opacity: 0.65;
+}
+
+/* Parallax scroll animation (only when supported) */
+@supports (animation-timeline: scroll()) {
+  .parallax-blob-1 {
+    animation: parallax-drift-1 linear both;
+    animation-timeline: scroll(root);
+  }
+  .parallax-blob-2 {
+    animation: parallax-drift-2 linear both;
+    animation-timeline: scroll(root);
+  }
+  .parallax-blob-3 {
+    animation: parallax-drift-3 linear both;
+    animation-timeline: scroll(root);
+  }
+
+  @keyframes parallax-drift-1 {
+    from { transform: translate3d(0, 0, 0) rotate(0deg); }
+    to   { transform: translate3d(-40px, 280px, 0) rotate(30deg); }
+  }
+  @keyframes parallax-drift-2 {
+    from { transform: translate3d(0, 0, 0) rotate(0deg); }
+    to   { transform: translate3d(30px, -220px, 0) rotate(-25deg); }
+  }
+  @keyframes parallax-drift-3 {
+    from { transform: translate3d(0, 0, 0) rotate(0deg); }
+    to   { transform: translate3d(-20px, -160px, 0) rotate(15deg); }
+  }
+}
+
+/* Floating slow-pulse when scroll API not available */
+@keyframes blob-float-1 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%       { transform: translate3d(12px, 20px, 0) scale(1.04); }
+}
+@keyframes blob-float-2 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%       { transform: translate3d(-10px, -18px, 0) scale(1.03); }
+}
+@keyframes blob-float-3 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%       { transform: translate3d(8px, -12px, 0) scale(1.02); }
+}
+
+@supports not (animation-timeline: scroll()) {
+  .parallax-blob-1 { animation: blob-float-1 14s ease-in-out infinite; }
+  .parallax-blob-2 { animation: blob-float-2 18s ease-in-out infinite; }
+  .parallax-blob-3 { animation: blob-float-3 22s ease-in-out infinite; }
+}
+
+/* ── Staggered child reveal (IntersectionObserver driven) ── */
+.reveal-child {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-child.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Delay utilities for stagger */
+.reveal-delay-1 { transition-delay: 80ms; }
+.reveal-delay-2 { transition-delay: 160ms; }
+.reveal-delay-3 { transition-delay: 240ms; }
+.reveal-delay-4 { transition-delay: 320ms; }
+.reveal-delay-5 { transition-delay: 400ms; }
+
+/* ── Skill badge hover shimmer ── */
+.skill-badge {
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.25s ease, color 0.25s ease,
+              transform 0.2s cubic-bezier(0.34,1.56,0.64,1),
+              box-shadow 0.25s ease;
+}
+
+.skill-badge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(128,128,128,0.15) 50%, transparent 60%);
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+}
+
+.skill-badge:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.skill-badge:hover::after {
+  transform: translateX(100%);
+}
+
+.dark .skill-badge:hover {
+  box-shadow: 0 4px 12px rgba(255,255,255,0.06);
+}
+
+/* ── Hero floating dots (CSS-only particles) ── */
+.hero-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  background: currentColor;
+  opacity: 0;
+  animation: particle-float linear infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes particle-float {
+  0%   { opacity: 0;    transform: translate3d(0, 20px, 0) scale(0.5); }
+  15%  { opacity: 0.18; }
+  85%  { opacity: 0.18; }
+  100% { opacity: 0;    transform: translate3d(0, -60px, 0) scale(1); }
+}
+
+/* ── Section heading slide-in ── */
+.section-heading-reveal {
+  opacity: 0;
+  transform: translate3d(-16px, 0, 0);
+  transition: opacity 0.5s cubic-bezier(0.22,1,0.36,1),
+              transform 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+
+.section-heading-reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* ── Tag hover micro-lift ── */
+.tag-item {
+  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1),
+              background-color 0.2s ease,
+              color 0.2s ease;
+}
+
+.tag-item:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+
 /* ── Magic UI View Transition — animated theme toggle ── */
 ::view-transition-old(root),
 ::view-transition-new(root) {
@@ -153,6 +403,37 @@ html[data-magicui-theme-vt="active"]::view-transition-image-pair(root) {
   .scroll-fade-section {
     animation: none !important;
     opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .parallax-blob {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .scroll-progress-bar {
+    animation: none !important;
+    display: none !important;
+  }
+
+  .reveal-child {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .section-heading-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .hero-particle {
+    display: none !important;
+  }
+
+  .skill-badge:hover,
+  .tag-item:hover {
     transform: none !important;
   }
 }
