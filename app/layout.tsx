@@ -4,7 +4,6 @@ import "./globals.css";
 import { getServerLanguage } from "@/lib/server-language";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/lib/language-context";
-import { ScrollAnimator } from "@/components/scroll-animator";
 import { ParallaxScene } from "@/components/parallax-scene";
 import { ScrollProgressBar } from "@/components/scroll-progress-bar";
 
@@ -377,21 +376,18 @@ export default async function RootLayout({
         {/* Inline critical CSS to prevent render-blocking */}
         <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
 
-        {/* Preload hero image for LCP optimization */}
+        {/* Preload the LCP hero image (locally-hosted avatar) */}
         <link
           rel="preload"
           as="image"
-          href="https://avatars.githubusercontent.com/faturahaman?v=4"
+          href="/avatar.webp"
+          type="image/webp"
           fetchPriority="high"
         />
 
-        {/* Preload favicon */}
-        <link rel="preload" as="image" href="/logo-no-bg.png" type="image/png" />
-
-        {/* DNS prefetch for external resources */}
-        <link rel="dns-prefetch" href="https://avatars.githubusercontent.com" />
-        <link rel="dns-prefetch" href="https://github.com" />
-        <link rel="preconnect" href="https://avatars.githubusercontent.com" crossOrigin="anonymous" />
+        {/* DNS prefetch for GitHub hosts used by below-the-fold project cards */}
+        <link rel="dns-prefetch" href="https://api.github.com" />
+        <link rel="dns-prefetch" href="https://raw.githubusercontent.com" />
 
         {/* JSON-LD: Person — core entity for Knowledge Panel */}
         <script
@@ -427,7 +423,6 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange={false}
           >
-            <ScrollAnimator />
             {children}
           </ThemeProvider>
         </LanguageProvider>

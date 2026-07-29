@@ -25,6 +25,31 @@ const nextConfig: NextConfig = {
   // ── Performance: enable compression ──
   compress: true,
 
+  // ── Don't leak the framework in a response header ──
+  poweredByHeader: false,
+
+  // ── Security headers (applied to every route) ──
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+        ],
+      },
+    ];
+  },
+
   // ── Optimize production builds ──
   productionBrowserSourceMaps: false,
 
