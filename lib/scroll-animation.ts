@@ -11,30 +11,37 @@ import { useEffect } from 'react'
  */
 export function useScrollAnimations() {
   useEffect(() => {
-    // ── 1. scroll-fade-section fallback (non-Chrome browsers) ──────────────
+    // Safety net: if IntersectionObserver is missing, reveal everything now
+    // so no animated element is ever left stuck in its hidden start state.
+    if (typeof IntersectionObserver === 'undefined') {
+      document
+        .querySelectorAll<Element>(
+          '.scroll-fade-section, .reveal-child, .section-heading-reveal'
+        )
+        .forEach((el) => el.classList.add('is-visible'))
+      return
+    }
+
+    // ── 1. Section reveal (.scroll-fade-section) ───────────────────────────
+    // One-shot: reveal when the section enters the viewport, then keep it
+    // visible. Runs in every browser (the previous CSS view-timeline approach
+    // faded sections back out at the viewport edges, which left the lower
+    // sections of short pages stuck transparent).
     const sections = document.querySelectorAll<Element>('.scroll-fade-section')
-
-    const supportsScrollTimeline = CSS.supports('animation-timeline', 'view()')
-
     let sectionObserver: IntersectionObserver | null = null
 
-    if (!supportsScrollTimeline && sections.length) {
-      const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -100px 0px',
-      }
-
-      sectionObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.remove('scroll-fade-out')
-            entry.target.classList.add('scroll-fade-in')
-          } else {
-            entry.target.classList.remove('scroll-fade-in')
-            entry.target.classList.add('scroll-fade-out')
-          }
-        })
-      }, observerOptions)
+    if (sections.length) {
+      sectionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible')
+              sectionObserver?.unobserve(entry.target)
+            }
+          })
+        },
+        { threshold: 0.1, rootMargin: '0px 0px -80px 0px' }
+      )
 
       sections.forEach((section) => sectionObserver!.observe(section))
     }
