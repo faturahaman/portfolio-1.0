@@ -2,13 +2,16 @@
 
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
+import { usePathname } from "next/navigation"
+import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler"
 import { LanguageSwitcher } from "@/components/ui/language-switcher"
+import { PersonaSwitcher } from "@/components/ui/persona-switcher"
 import { useLanguage } from "@/lib/language-context"
 import { PROFILE } from "@/data/resume"
 
-const NAV_LINKS = [
+const DEV_NAV_LINKS = [
   { href: "#about", labelKey: "nav.about" },
   { href: "#experience", labelKey: "nav.experience" },
   { href: "#projects", labelKey: "nav.projects" },
@@ -16,11 +19,22 @@ const NAV_LINKS = [
   { href: "#certifications", labelKey: "nav.certifications" },
 ]
 
+const VIDEO_NAV_LINKS = [
+  { href: "#reel", labelKey: "videoEditor.navReel" },
+  { href: "#skills", labelKey: "videoEditor.navSkills" },
+  { href: "#process", labelKey: "videoEditor.navProcess" },
+]
+
 export function Navbar() {
   const { setTheme, resolvedTheme } = useTheme()
   const { t } = useLanguage()
+  const pathname = usePathname()
   const [mounted, setMounted] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+
+  const isVideo = pathname?.startsWith("/video-editor")
+  const NAV_LINKS = isVideo ? VIDEO_NAV_LINKS : DEV_NAV_LINKS
+  const homeHref = isVideo ? "/video-editor" : "/"
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -43,9 +57,11 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 bg-white dark:bg-[#111111] border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
+      <nav aria-label="Main navigation" className="sticky top-0 z-50 bg-white dark:bg-[#111111] border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <span className="text-xl font-bold tracking-tight">Riffatur.io</span>
+          <Link href={homeHref} className="text-xl font-bold tracking-tight hover:opacity-80 transition-opacity">
+            Riffatur.io
+          </Link>
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-6 text-sm text-gray-600 dark:text-gray-300">
@@ -67,6 +83,7 @@ export function Navbar() {
             </a>
 
             <div className="flex items-center gap-3">
+              <PersonaSwitcher />
               <LanguageSwitcher />
               {mounted && (
                 <AnimatedThemeToggler
@@ -109,11 +126,9 @@ export function Navbar() {
       {menuOpen && (
         <div
           className="fixed inset-0 z-40 md:hidden"
-          onClick={closeMenu}
-          aria-hidden="true"
         >
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm" onClick={closeMenu} aria-hidden="true" />
         </div>
       )}
       <div
@@ -122,6 +137,9 @@ export function Navbar() {
         }`}
       >
         <div className="px-4 py-4 flex flex-col gap-1">
+          <div className="pb-3 mb-1 border-b border-gray-100 dark:border-gray-800" onClick={closeMenu}>
+            <PersonaSwitcher />
+          </div>
           {NAV_LINKS.map(({ href, labelKey }) => (
             <a
               key={href}

@@ -1,13 +1,15 @@
 import { Navbar } from "@/components/layout/navbar"
-import { Footer } from "@/components/layout/footer"
 import { HeroSection } from "@/components/sections/hero-section"
 import { StatsSection } from "@/components/sections/stats-section"
 import { ExperienceSection } from "@/components/sections/experience-section"
-import { ProjectsSection } from "@/components/projects-section"
-import { SkillsSection } from "@/components/sections/skills-section"
-import { EducationSection } from "@/components/sections/education-section"
-import { CertificationsSection } from "@/components/sections/certifications-section"
-import { CtaSection } from "@/components/sections/cta-section"
+import dynamic from "next/dynamic"
+
+const ProjectsSection = dynamic(() => import("@/components/projects-section").then(m => m.ProjectsSection))
+const SkillsSection = dynamic(() => import("@/components/sections/skills-section").then(m => m.SkillsSection))
+const EducationSection = dynamic(() => import("@/components/sections/education-section").then(m => m.EducationSection))
+const CertificationsSection = dynamic(() => import("@/components/sections/certifications-section").then(m => m.CertificationsSection))
+const CtaSection = dynamic(() => import("@/components/sections/cta-section").then(m => m.CtaSection))
+const Footer = dynamic(() => import("@/components/layout/footer").then(m => m.Footer))
 
 // Sections are kept synchronous to preserve good initial load time
 // Heavy components within sections (RepoModal, CertificationsCarousel) handle dynamic imports internally
@@ -15,9 +17,12 @@ import { CtaSection } from "@/components/sections/cta-section"
 export default function Home() {
   return (
     <div className="relative z-10 min-h-screen bg-white/90 dark:bg-[#111111]/90 text-[#242424] dark:text-[#ededed] font-sans transition-colors duration-300">
+      <a href="#about" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-[60] bg-black text-white px-4 py-2 rounded-md font-bold">
+        Skip to content
+      </a>
       <Navbar />
 
-      <main className="relative max-w-4xl mx-auto px-4 sm:px-6">
+      <main id="main-content" className="relative max-w-4xl mx-auto px-4 sm:px-6">
         <div className="scroll-fade-section">
           <HeroSection />
         </div>

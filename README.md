@@ -183,7 +183,7 @@ Then deploy the `.next` folder to your hosting provider.
 
 ## 📞 Contact
 
-- **Email:** [faturahaman.r@gmail.com](mailto:faturahaman.r@gmail.com)
+- **Email:** [riffatur.io@gmail.com](mailto:riffatur.io@gmail.com)
 - **LinkedIn:** [Muhamad Riffa Faturahman](https://linkedin.com/in/muhamad-riffa-faturahman-71ba5a279)
 - **GitHub:** [@faturahaman](https://github.com/faturahaman)
 - **Website:** [riffatur.com](https://riffatur.com)

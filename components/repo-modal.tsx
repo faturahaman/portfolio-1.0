@@ -8,6 +8,7 @@ import { useGithubStore, type GithubRepo } from "@/store/github"
 import { X, Star, GitFork, ExternalLink, Globe } from "lucide-react"
 import { getCombinedAltText, altTexts } from "@/lib/alt-text"
 import { LANG_COLORS, timeAgo } from "@/lib/github-utils"
+import { useLanguage } from "@/lib/language-context"
 
 interface RepoModalProps {
   repo: GithubRepo
@@ -15,6 +16,7 @@ interface RepoModalProps {
 }
 
 export function RepoModal({ repo, onClose }: RepoModalProps) {
+  const { t } = useLanguage()
   const { readmeCache, readmeLoading, coverImageCache, fetchReadme } = useGithubStore()
   const key = repo.full_name
   const readme = readmeCache[key]
@@ -147,7 +149,7 @@ export function RepoModal({ repo, onClose }: RepoModalProps) {
             </div>
             
             <div className="text-xs text-gray-400 dark:text-gray-500 mb-6">
-              Updated {timeAgo(repo.updated_at)}
+              {t("projects.updated")} {timeAgo(repo.updated_at)}
             </div>
 
             {/* Topics */}
@@ -175,7 +177,7 @@ export function RepoModal({ repo, onClose }: RepoModalProps) {
                 className="flex items-center justify-center gap-2 bg-black dark:bg-white text-white dark:text-black text-sm font-semibold px-4 py-3 rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-sm"
               >
                 <ExternalLink className="w-4 h-4" />
-                View on GitHub
+                {t("projects.viewOnGitHub")}
               </a>
               {repo.homepage && (
                 <a
@@ -185,7 +187,7 @@ export function RepoModal({ repo, onClose }: RepoModalProps) {
                   className="flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold px-4 py-3 rounded-full hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
                 >
                   <Globe className="w-4 h-4" />
-                  Live Demo
+                  {t("projects.liveDemo")}
                 </a>
               )}
             </div>
@@ -196,7 +198,7 @@ export function RepoModal({ repo, onClose }: RepoModalProps) {
         <div className="flex-1 min-h-0 min-w-0 flex flex-col bg-white dark:bg-[#121212]">
           <div className="px-6 sm:px-10 py-5 border-b border-gray-100 dark:border-gray-800/60 flex-shrink-0 bg-white/80 dark:bg-[#121212]/80 backdrop-blur-md sticky top-0 z-10">
             <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
-              README.md
+              {t("projects.readme")}.md
             </span>
           </div>
 
@@ -261,9 +263,9 @@ export function RepoModal({ repo, onClose }: RepoModalProps) {
                 <div className="w-16 h-16 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center mb-5">
                   <span className="text-2xl opacity-60">📄</span>
                 </div>
-                <h3 className="text-xl font-bold font-sans text-gray-900 dark:text-white mb-2">No README found</h3>
+                <h3 className="text-xl font-bold font-sans text-gray-900 dark:text-white mb-2">{t("projects.noReadme")}</h3>
                 <p className="text-gray-500 dark:text-gray-400 font-serif max-w-sm mx-auto">
-                  This repository doesn&apos;t have a README file to display yet.
+                  {t("projects.noReadmeDesc")}
                 </p>
               </div>
             )}

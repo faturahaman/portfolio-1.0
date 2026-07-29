@@ -1,10 +1,18 @@
 import type { Metadata, Viewport } from "next";
+import { Outfit } from "next/font/google";
 import "./globals.css";
+import { getServerLanguage } from "@/lib/server-language";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/lib/language-context";
 import { ScrollAnimator } from "@/components/scroll-animator";
 import { ParallaxScene } from "@/components/parallax-scene";
 import { ScrollProgressBar } from "@/components/scroll-progress-bar";
+
+const outfit = Outfit({ 
+  subsets: ["latin"],
+  display: 'swap',
+  variable: '--font-sans',
+});
 
 const BASE_URL = "https://riffatur.com";
 
@@ -160,7 +168,7 @@ const personSchema = {
   jobTitle: "Web Developer",
   description:
     "Web developer freelance Indonesia spesialis React, Next.js, Laravel, NestJS, PHP, REST API. Tersedia untuk proyek freelance dan kolaborasi.",
-  email: "faturahaman.r@gmail.com",
+  email: "riffatur.io@gmail.com",
   nationality: {
     "@type": "Country",
     name: "Indonesia",
@@ -245,7 +253,7 @@ const faqSchema = {
       name: "Apakah Riffa Faturahman menerima proyek freelance web development?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Ya, Muhamad Riffa Faturahman menerima proyek freelance web development dari seluruh Indonesia maupun internasional. Hubungi via email faturahaman.r@gmail.com atau LinkedIn untuk konsultasi gratis.",
+        text: "Ya, Muhamad Riffa Faturahman menerima proyek freelance web development dari seluruh Indonesia maupun internasional. Hubungi via email riffatur.io@gmail.com atau LinkedIn untuk konsultasi gratis.",
       },
     },
     {
@@ -352,15 +360,17 @@ const criticalCSS = `
   }
 `;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const lang = await getServerLanguage();
+
   return (
     <html
-      lang="id"
-      className="h-full antialiased"
+      lang={lang}
+      className={`h-full antialiased ${outfit.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -410,7 +420,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <ParallaxScene />
         <ScrollProgressBar />
-        <LanguageProvider>
+        <LanguageProvider initialLanguage={lang}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

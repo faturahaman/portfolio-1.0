@@ -1,10 +1,8 @@
-"use client"
-
 import { STATS } from "@/data/resume"
-import { useLanguage } from "@/lib/language-context"
+import { getT } from "@/lib/server-language"
 
-export function StatsSection() {
-  const { t } = useLanguage()
+export async function StatsSection() {
+  const t = await getT()
 
   const translatedStats = [
     { value: STATS[0].value, label: t("stats.projectsDelivered") },

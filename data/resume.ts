@@ -58,18 +58,52 @@ export interface SkillGroup {
 }
 
 export const SKILLS: SkillGroup[] = [
-  { category: "Programming Languages", items: ["PHP", "JavaScript", "Python", "Go"] },
-  { category: "Frontend", items: ["React.js", "Next.js", "HTML", "CSS", "Tailwind CSS"] },
-  { category: "Backend", items: ["Laravel", "NestJS", "REST API"] },
-  { category: "Database", items: ["MySQL", "MongoDB", "PostgreSQL", "SQLite"] },
-  { category: "Tools & DevOps", items: ["Git", "Docker", "Postman"] },
+  {
+    category: "Languages",
+    items: ["JavaScript", "PHP", "Python", "Go"],
+  },
+  {
+    category: "Frontend",
+    items: ["React.js", "Next.js", "HTML", "CSS", "Tailwind CSS"],
+  },
+  {
+    category: "Backend Frameworks",
+    items: ["Laravel", "NestJS"],
+  },
+  {
+    category: "API",
+    items: ["REST API"],
+  },
+  {
+    category: "Databases",
+    items: ["MySQL", "PostgreSQL", "MongoDB", "SQLite"],
+  },
+  {
+    category: "Tools & DevOps",
+    items: ["Git", "Docker", "Postman"],
+  },
 ]
 
-export const EDUCATION = {
-  degree: "Software Engineering and Game Development",
-  school: "SMK Analis Kimia Nusa Bangsa",
-  year: "2026",
+export interface EducationEntry {
+  degree: string
+  school: string
+  period: string
+  type?: string
 }
+
+export const EDUCATION: EducationEntry[] = [
+  {
+    degree: "Software Engineering and Game Development",
+    school: "SMK Analis Kimia Nusa Bangsa",
+    period: "2023 – 2026",
+  },
+  {
+    degree: "Cohort Student — Coding Camp",
+    school: "Dicoding",
+    period: "Jan 2025 – Mar 2025",
+    type: "Bootcamp",
+  },
+]
 
 export interface Certification {
   name: string
@@ -96,7 +130,7 @@ export const STATS = [
 export const PROFILE = {
   name: "Muhamad Riffa Faturahman",
   title: "Website Developer",
-  email: "faturahaman.r@gmail.com",
+  email: "riffatur.io@gmail.com",
   linkedin: "https://linkedin.com/in/muhamad-riffa-faturahman-71ba5a279",
   github: "https://github.com/faturahaman",
   githubUsername: "faturahaman",

@@ -1,17 +1,20 @@
 "use client"
 
-import { useEffect, useState, lazy, Suspense } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useGithubStore, type GithubRepo } from "@/store/github"
-import { Star, GitFork, AlertCircle, RefreshCw, Globe, ChevronLeft, ChevronRight } from "lucide-react"
+import { Star, GitFork, AlertCircle, RefreshCw, Globe, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
 import { useLanguage } from "@/lib/language-context"
 import { LANG_COLORS, timeAgo } from "@/lib/github-utils"
 
+import dynamic from "next/dynamic"
+
 // Dynamically import RepoModal only when needed to reduce initial bundle
-const RepoModal = lazy(() =>
-  import("@/components/repo-modal").then((mod) => ({ default: mod.RepoModal }))
+const RepoModal = dynamic(() =>
+  import("@/components/repo-modal").then((mod) => mod.RepoModal),
+  { ssr: false }
 )
 
-/** Card — cover image as background fading right→left */
+/** Card — Medium-style: typography-first, cover thumbnail right, minimal meta */
 function RepoCard({
   repo,
   onClick,
@@ -38,135 +41,132 @@ function RepoCard({
 
   return (
     <div
-      className="group relative rounded-xl border border-gray-100 dark:border-gray-800
-        overflow-hidden cursor-pointer
-        hover:border-gray-300 dark:hover:border-gray-600
-        hover:shadow-lg dark:hover:shadow-black/40
-        transition-all duration-300
-        bg-white dark:bg-[#161616]"
-      style={{ minHeight: "9rem" }}
+      className="group flex flex-row items-stretch w-full gap-4
+        py-5 cursor-pointer
+        border-b border-gray-100 dark:border-gray-800/60
+        hover:border-gray-200 dark:hover:border-gray-700
+        transition-colors duration-200"
       onClick={onClick}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onClick() }}
     >
-      {/* ── Background cover image (right side, fades left) ── */}
-      {showCover && (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={coverImage!}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover object-right
-              transition-transform duration-500 group-hover:scale-105"
-            onError={() => setImgError(true)}
-            loading="lazy"
-          />
-          {/* Gradient overlay — light mode */}
-          <div
-            className="absolute inset-0 dark:hidden"
-            style={{
-              background:
-                "linear-gradient(to right, #ffffff 38%, #ffffffcc 62%, transparent 100%)",
-            }}
-          />
-          {/* Gradient overlay — dark mode */}
-          <div
-            className="absolute inset-0 hidden dark:block"
-            style={{
-              background:
-                "linear-gradient(to right, #161616 38%, #161616cc 62%, transparent 100%)",
-            }}
-          />
-        </>
-      )}
+      {/* ── Left: text content ── */}
+      <div className="flex flex-col justify-between flex-1 min-w-0">
 
-      {/* ── Foreground content ── */}
-      <div className="relative z-10 p-5 flex flex-col h-full">
+        {/* Top: topics + title + description */}
+        <div>
+          {/* Topic pills (like Medium's "publication" tag) */}
+          {repo.topics.length > 0 && (
+            <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+              {repo.topics.slice(0, 3).map((topic) => (
+                <span
+                  key={topic}
+                  className="text-[11px] font-medium
+                    text-gray-500 dark:text-gray-400
+                    bg-gray-100 dark:bg-gray-800
+                    px-2.5 py-0.5 rounded-full"
+                >
+                  {topic}
+                </span>
+              ))}
+            </div>
+          )}
 
-        {/* Repo name + visibility */}
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="font-semibold text-base leading-snug
-            group-hover:text-black dark:group-hover:text-white
-            transition-colors line-clamp-1">
-            {repo.name}
+          {/* Title — bold, hover underline like Medium */}
+          <h3 className="font-bold text-[15px] sm:text-base leading-snug mb-1.5
+            text-gray-900 dark:text-gray-100
+            group-hover:underline decoration-gray-300 dark:decoration-gray-600
+            underline-offset-2 transition-all line-clamp-2">
+            {repo.name.replace(/-/g, " ")}
           </h3>
-          <span className="text-[10px] border border-gray-200 dark:border-gray-700
-            text-gray-400 dark:text-gray-500 px-2 py-0.5 rounded-full
-            flex-shrink-0 mt-0.5 capitalize bg-white/80 dark:bg-[#161616]/80">
-            {repo.visibility}
-          </span>
+
+          {/* Description — muted subtitle */}
+          <p className="text-[13px] text-gray-500 dark:text-gray-400
+            leading-relaxed line-clamp-2">
+            {repo.description ?? t("projects.noDescription")}
+          </p>
         </div>
 
-        {/* Description */}
-        <p className="text-sm text-gray-500 dark:text-gray-300 leading-relaxed
-          line-clamp-2 mb-4 min-h-[2.5rem]">
-          {repo.description ?? t("projects.noDescription")}
-        </p>
-
-        {/* Topics */}
-        {repo.topics.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {repo.topics.slice(0, 3).map((topic) => (
-              <span
-                key={topic}
-                className="text-[11px] bg-gray-100/90 dark:bg-gray-700/50
-                  text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full"
-              >
-                {topic}
-              </span>
-            ))}
-            {repo.topics.length > 3 && (
-              <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                +{repo.topics.length - 3}
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Footer row */}
-        <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+        {/* Bottom meta row — Medium-style dots separator */}
+        <div className="flex items-center gap-0 mt-3 text-[12px] text-gray-400 dark:text-gray-500 flex-wrap">
+          {/* Language */}
           {repo.language && (
-            <span className="flex items-center gap-1.5">
-              <span
-                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                style={{ backgroundColor: langColor ?? "#8b949e" }}
-              />
-              {repo.language}
-            </span>
+            <>
+              <span className="flex items-center gap-1.5">
+                <span
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: langColor ?? "#8b949e" }}
+                />
+                {repo.language}
+              </span>
+              <span className="mx-2 text-gray-300 dark:text-gray-600 select-none">·</span>
+            </>
           )}
+
+          {/* Stars */}
           <span className="flex items-center gap-1">
             <Star className="w-3 h-3" />
             {repo.stargazers_count}
           </span>
+          <span className="mx-2 text-gray-300 dark:text-gray-600 select-none">·</span>
+
+          {/* Forks */}
           <span className="flex items-center gap-1">
             <GitFork className="w-3 h-3" />
             {repo.forks_count}
           </span>
-          <span className="ml-auto">{timeAgo(repo.updated_at)}</span>
-        </div>
 
-        {/* Live site pill */}
-        {repo.homepage && (
-          <div className="mt-3">
-            <a
-              href={repo.homepage}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1.5 text-[11px] font-medium
-                text-gray-600 dark:text-gray-300
-                bg-gray-100 dark:bg-gray-800
-                px-2.5 py-1 rounded-full
-                hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-            >
-              <Globe className="w-3 h-3" />
-              {t("projects.liveSite")}
-            </a>
-          </div>
-        )}
+          {/* Visibility badge */}
+          <span className="mx-2 text-gray-300 dark:text-gray-600 select-none">·</span>
+          <span className="capitalize text-gray-400 dark:text-gray-500">{repo.visibility}</span>
+
+          {/* Timestamp — right-aligned like "X min read" */}
+          <span className="ml-auto text-gray-400 dark:text-gray-500 flex-shrink-0">
+            {timeAgo(repo.updated_at)}
+          </span>
+        </div>
       </div>
+
+      {/* ── Right: cover thumbnail (Medium-style fixed box) ── */}
+      {showCover && (
+        <div className="flex-shrink-0 w-[100px] sm:w-[130px] h-auto self-start">
+          <div className="relative w-full aspect-[4/3] overflow-hidden rounded-md
+            bg-gray-100 dark:bg-gray-800">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={coverImage!}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover
+                transition-transform duration-500 ease-out
+                group-hover:scale-105"
+              onError={() => setImgError(true)}
+              loading="lazy"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Homepage link — shown when no cover image */}
+      {!showCover && repo.homepage && (
+        <div className="flex-shrink-0 self-start mt-0.5">
+          <a
+            href={repo.homepage}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-1 text-[11px] font-medium
+              text-gray-400 dark:text-gray-500
+              hover:text-gray-700 dark:hover:text-gray-300
+              transition-colors"
+            aria-label={`Visit live site for ${repo.name}`}
+          >
+            <Globe className="w-3.5 h-3.5" />
+            {t("projects.live")}
+          </a>
+        </div>
+      )}
     </div>
   )
 }
@@ -214,27 +214,27 @@ export function ProjectsSection() {
         </h2>
         {reposFetched && repos.length > 0 && (
           <span className="text-xs text-gray-500 dark:text-gray-400">
-            {start + 1}–{Math.min(start + PER_PAGE, repos.length)} of {repos.length} repos
+            {start + 1}–{Math.min(start + PER_PAGE, repos.length)} {t("projects.repoCounter")}
           </span>
         )}
       </div>
 
-      {/* Loading skeleton */}
+      {/* Loading skeleton — Medium-style single column */}
       {reposLoading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="flex flex-col">
           {Array.from({ length: PER_PAGE }).map((_, i) => (
             <div
               key={i}
-              className="animate-pulse rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden p-5 space-y-3"
-              style={{ minHeight: "9rem" }}
+              className="animate-pulse flex flex-row items-start gap-4 py-5 border-b border-gray-100 dark:border-gray-800/60"
             >
-              <div className="flex justify-between gap-2">
-                <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-2/5" />
-                <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-12" />
+              <div className="flex flex-col gap-2 flex-1">
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-1/4" />
+                <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-3/4" />
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-full" />
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-2/3" />
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-1/3 mt-1" />
               </div>
-              <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-full" />
-              <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-4/5" />
-              <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-1/3 mt-auto" />
+              <div className="flex-shrink-0 w-[100px] sm:w-[130px] aspect-[4/3] bg-gray-100 dark:bg-gray-800 rounded-md" />
             </div>
           ))}
         </div>
@@ -245,7 +245,7 @@ export function ProjectsSection() {
         <div className="flex flex-col items-center justify-center py-16 text-center gap-4">
           <AlertCircle className="w-8 h-8 text-gray-400 dark:text-gray-600" />
           <div>
-            <p className="font-medium text-gray-700 dark:text-gray-300">Failed to load repositories</p>
+            <p className="font-medium text-gray-700 dark:text-gray-300">{t("projects.failedToLoad")}</p>
             <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">{reposError}</p>
           </div>
           <button
@@ -253,7 +253,7 @@ export function ProjectsSection() {
             className="flex items-center gap-2 text-sm border border-gray-200 dark:border-gray-700 px-4 py-2 rounded-full hover:border-gray-400 transition-colors"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            Retry
+            {t("projects.retry")}
           </button>
         </div>
       )}
@@ -261,7 +261,7 @@ export function ProjectsSection() {
       {/* Repo grid */}
       {!reposLoading && !reposError && repos.length > 0 && (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex flex-col">
             {visible.map((repo) => (
               <RepoCard
                 key={repo.id}

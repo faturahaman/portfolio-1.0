@@ -1,7 +1,5 @@
-"use client"
-
 import { EXPERIENCE, type ExperienceEntry } from "@/data/resume"
-import { useLanguage } from "@/lib/language-context"
+import { getT, getServerLanguage } from "@/lib/server-language"
 
 const EXPERIENCE_ID: ExperienceEntry[] = [
   {
@@ -103,8 +101,9 @@ function ExperienceItem({ entry }: { entry: ExperienceEntry }) {
   )
 }
 
-export function ExperienceSection() {
-  const { language, t } = useLanguage()
+export async function ExperienceSection() {
+  const t = await getT()
+  const language = await getServerLanguage()
   const experiences = language === 'id' ? EXPERIENCE_ID : EXPERIENCE
 
   return (

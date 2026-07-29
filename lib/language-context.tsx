@@ -1,45 +1,46 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useState } from 'react'
 import { t as translate, LanguageCode } from '@/lib/translations'
+import { useRouter } from 'next/navigation'
+import { setLanguageCookie } from '@/app/actions'
 
 type Language = LanguageCode
 
 interface LanguageContextType {
   language: Language
-  setLanguage: (lang: Language) => void
+  setLanguage: (lang: Language) => Promise<void>
   t: (path: string) => string
 }
 
 // Default context value untuk SSR
 const defaultContextValue: LanguageContextType = {
   language: 'en',
-  setLanguage: () => {},
+  setLanguage: async () => {},
   t: (path: string) => translate(path, 'en'),
 }
 
 const LanguageContext = createContext<LanguageContextType>(defaultContextValue)
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>('en')
-  const [mounted, setMounted] = useState(false)
+export function LanguageProvider({ children, initialLanguage = 'en' }: { children: React.ReactNode, initialLanguage?: Language }) {
+  const [language, setLanguageState] = useState<Language>(initialLanguage)
+  const [isPending, startTransition] = React.useTransition()
+  const router = useRouter()
 
-  // Initialize from localStorage on client side
-  useEffect(() => {
-    const saved = localStorage.getItem('language') as Language | null
-    if (saved && (saved === 'en' || saved === 'id')) {
-      setLanguageState(saved)
-    } else {
-      // Auto-detect from browser language
-      const browserLang = navigator.language.startsWith('id') ? 'id' : 'en'
-      setLanguageState(browserLang)
-    }
-    setMounted(true)
-  }, [])
-
-  const setLanguage = (lang: Language) => {
+  const setLanguage = async (lang: Language) => {
+    // Optimistic UI update
     setLanguageState(lang)
-    localStorage.setItem('language', lang)
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = lang
+    }
+    
+    // Set cookie on server
+    await setLanguageCookie(lang)
+    
+    // Refresh Server Components without losing client state
+    startTransition(() => {
+      router.refresh()
+    })
   }
 
   const tFunc = (path: string): string => {

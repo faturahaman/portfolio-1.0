@@ -1,29 +1,20 @@
-import { SKILLS } from "@/data/resume"
+import { VIDEO_SKILLS } from "@/data/video-editor"
 import { getT } from "@/lib/server-language"
 
-export async function SkillsSection() {
+export async function VeSkillsSection() {
   const t = await getT()
-
-  const skillCategories: Record<string, string> = {
-    "Languages": t("skills.languages"),
-    "Frontend": t("skills.frontend"),
-    "Backend Frameworks": t("skills.backendFrameworks"),
-    "API": t("skills.api"),
-    "Databases": t("skills.databases"),
-    "Tools & DevOps": t("skills.toolsDevOps"),
-  }
 
   return (
     <section id="skills" className="py-16 border-b border-gray-200 dark:border-gray-800">
       <h2 className="section-heading-reveal text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-10">
-        {t("skills.title")}
+        {t("videoEditor.skillsTitle")}
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
-        {SKILLS.map(({ category, items }, idx) => (
+        {VIDEO_SKILLS.map(({ category, titleKey, items }, idx) => (
           <div key={category} className={`reveal-child reveal-delay-${Math.min(idx + 1, 5)}`}>
             <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">
-              {skillCategories[category] || category}
+              {t(titleKey)}
             </p>
             <div className="flex flex-wrap gap-2">
               {items.map((item) => (

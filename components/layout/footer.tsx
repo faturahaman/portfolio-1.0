@@ -1,10 +1,8 @@
-"use client"
-
 import { PROFILE } from "@/data/resume"
-import { useLanguage } from "@/lib/language-context"
+import { getT } from "@/lib/server-language"
 
-export function Footer() {
-  const { t } = useLanguage()
+export async function Footer() {
+  const t = await getT()
 
   return (
     <footer className="border-t border-gray-200 dark:border-gray-800 py-8 transition-colors duration-300">
@@ -15,7 +13,7 @@ export function Footer() {
             href={`mailto:${PROFILE.email}`}
             className="hover:text-black dark:hover:text-white transition-colors"
           >
-            Email
+            {t("footer.email")}
           </a>
           <a
             href={PROFILE.linkedin}
@@ -23,7 +21,7 @@ export function Footer() {
             rel="noopener noreferrer"
             className="hover:text-black dark:hover:text-white transition-colors"
           >
-            LinkedIn
+            {t("footer.linkedin")}
           </a>
         </div>
       </div>
