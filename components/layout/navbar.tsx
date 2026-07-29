@@ -59,9 +59,17 @@ export function Navbar() {
     <>
       <nav aria-label="Main navigation" className="sticky top-0 z-50 bg-white dark:bg-[#111111] border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <Link href={homeHref} className="text-xl font-bold tracking-tight hover:opacity-80 transition-opacity">
-            Riffatur.io
-          </Link>
+          {/* ── Left: brand + persona switcher ── */}
+          <div className="flex items-center gap-3">
+            <Link href={homeHref} className="text-xl font-bold tracking-tight hover:opacity-80 transition-opacity">
+              Riffatur.io
+            </Link>
+            {/* Persona switcher sits by the brand as an identity control,
+                keeping the right-hand nav group from getting crowded. */}
+            <div className="hidden sm:block">
+              <PersonaSwitcher />
+            </div>
+          </div>
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-6 text-sm text-gray-600 dark:text-gray-300">
@@ -83,7 +91,6 @@ export function Navbar() {
             </a>
 
             <div className="flex items-center gap-3">
-              <PersonaSwitcher />
               <LanguageSwitcher />
               {mounted && (
                 <AnimatedThemeToggler
@@ -138,7 +145,7 @@ export function Navbar() {
       >
         <div className="px-4 py-4 flex flex-col gap-1">
           <div className="pb-3 mb-1 border-b border-gray-100 dark:border-gray-800" onClick={closeMenu}>
-            <PersonaSwitcher />
+            <PersonaSwitcher withLabels />
           </div>
           {NAV_LINKS.map(({ href, labelKey }) => (
             <a
