@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 /**
  * Scroll Animation Hook
  * Provides:
- * 1. fade-in/fade-out fallback for .scroll-fade-section (older browsers)
+ * 1. One-shot reveal for .scroll-fade-section (fade + rise on enter)
  * 2. Staggered reveal for .reveal-child elements
  * 3. Slide-in reveal for .section-heading-reveal elements
  *
@@ -24,26 +24,36 @@ export function useScrollAnimations() {
     ).matches
     if (prefersReducedMotion) return
 
-    const supportsScrollTimeline = CSS.supports('animation-timeline', 'view()')
-
-    // ── 1. scroll-fade-section fallback (browsers without view-timeline) ────
-    let sectionObserver: IntersectionObserver | null = null
-    if (!supportsScrollTimeline) {
-      sectionObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.remove('scroll-fade-out')
-              entry.target.classList.add('scroll-fade-in')
-            } else {
-              entry.target.classList.remove('scroll-fade-in')
-              entry.target.classList.add('scroll-fade-out')
-            }
-          })
-        },
-        { threshold: 0.1, rootMargin: '0px 0px -100px 0px' }
-      )
+    // Safety net: if IntersectionObserver is missing, reveal everything now
+    // so no animated element is ever left stuck in its hidden start state.
+    if (typeof IntersectionObserver === 'undefined') {
+      document
+        .querySelectorAll<Element>(
+          '.scroll-fade-section, .reveal-child, .section-heading-reveal'
+        )
+        .forEach((el) => el.classList.add('is-visible'))
+      return
     }
+
+    // ── 1. Section reveal (.scroll-fade-section) ───────────────────────────
+    // One-shot: reveal when the section enters the viewport, then keep it
+    // visible. Runs in every browser (the previous CSS view-timeline approach
+    // faded sections back out at the viewport edges, which left the lower
+    // sections of short pages stuck transparent). Created unconditionally —
+    // and driven through the shared `wireUp` pass below — so sections that
+    // mount later via dynamic() are still observed.
+    let sectionObserver: IntersectionObserver | null = null
+    sectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible')
+            sectionObserver?.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -80px 0px' }
+    )
 
     // ── 2. Staggered reveal children (.reveal-child) ───────────────────────
     const childObserver = new IntersectionObserver(

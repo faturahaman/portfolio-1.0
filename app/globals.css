@@ -103,66 +103,28 @@ html {
   }
 }
 
-/* ── Section fade (view-timeline) ── */
+/* ── Section reveal (one-shot, IntersectionObserver driven) ──
+   Reveals once when the section scrolls into view, then STAYS visible.
+   Previously used a view-timeline keyframe that was only opaque while the
+   section sat in the middle of the viewport — on short pages the lower
+   sections never reached the middle and got stuck transparent. */
 .scroll-fade-section {
   opacity: 0;
-  transform: translate3d(0, -40px, 0) scale(0.95);
+  transform: translate3d(0, -24px, 0) scale(0.98);
   transform-origin: center;
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* will-change only while pending — dropped once revealed so the GPU layer
+   is released and doesn't linger (cheaper on mobile). */
+.scroll-fade-section:not(.is-visible) {
   will-change: opacity, transform;
 }
 
-/* Native View Transitions API (Chrome 115+) */
-@supports (animation-timeline: view()) {
-  .scroll-fade-section {
-    animation: scroll-center-fade linear both;
-    animation-timeline: view();
-    animation-range: entry -5% exit 105%;
-  }
-}
-
-/* Fallback for browsers without View Transitions support */
-.scroll-fade-in {
-  animation: scroll-fade-in-fallback 1s ease-out forwards;
-}
-
-.scroll-fade-out {
-  animation: scroll-fade-out-fallback 1s ease-in forwards;
-}
-
-@keyframes scroll-center-fade {
-  0%,
-  100% {
-    opacity: 0;
-    transform: translate3d(0, -40px, 0) scale(0.95);
-  }
-
-  38%,
-  62% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-}
-
-@keyframes scroll-fade-in-fallback {
-  from {
-    opacity: 0;
-    transform: translate3d(0, -40px, 0) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-}
-
-@keyframes scroll-fade-out-fallback {
-  from {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translate3d(0, -40px, 0) scale(0.95);
-  }
+.scroll-fade-section.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
 }
 
 /* ── Page transition (persona switch / soft navigation) ──
@@ -297,6 +259,10 @@ html {
   transform: translate3d(0, 24px, 0);
   transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
               transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Hint only while pending; released after the one-shot reveal. */
+.reveal-child:not(.is-visible) {
   will-change: opacity, transform;
 }
 
@@ -419,9 +385,9 @@ html[data-magicui-theme-vt="active"]::view-transition-image-pair(root) {
   }
 
   .scroll-fade-section {
-    animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+    transition: none !important;
   }
 
   .parallax-blob {
