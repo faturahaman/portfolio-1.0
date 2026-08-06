@@ -9,6 +9,7 @@ import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler"
 import { LanguageSwitcher } from "@/components/ui/language-switcher"
 import { PersonaSwitcher } from "@/components/ui/persona-switcher"
 import { useLanguage } from "@/lib/language-context"
+import { lockBodyScroll } from "@/lib/scroll-lock"
 import { PROFILE } from "@/data/resume"
 
 const DEV_NAV_LINKS = [
@@ -29,26 +30,28 @@ export function Navbar() {
   const { setTheme, resolvedTheme } = useTheme()
   const { t } = useLanguage()
   const pathname = usePathname()
-  const [mounted, setMounted] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
   const isVideo = pathname?.startsWith("/video-editor")
   const NAV_LINKS = isVideo ? VIDEO_NAV_LINKS : DEV_NAV_LINKS
   const homeHref = isVideo ? "/video-editor" : "/"
 
-  useEffect(() => { setMounted(true) }, [])
-
-  // Close menu on resize to desktop
+  // Close menu once the layout goes desktop. matchMedia fires once when the
+  // breakpoint is actually crossed; a resize listener fired on every pixel of
+  // every drag and during mobile scroll (address-bar show/hide counts as a
+  // resize), calling setState each time.
   useEffect(() => {
-    const handler = () => { if (window.innerWidth >= 768) setMenuOpen(false) }
-    window.addEventListener("resize", handler)
-    return () => window.removeEventListener("resize", handler)
+    const mq = window.matchMedia("(min-width: 768px)")
+    const handler = (e: MediaQueryListEvent) => { if (e.matches) setMenuOpen(false) }
+    mq.addEventListener("change", handler)
+    return () => mq.removeEventListener("change", handler)
   }, [])
 
-  // Lock body scroll when menu is open
+  // Lock body scroll when menu is open. Goes through the shared counter so the
+  // repo modal and this drawer can't unlock each other.
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : ""
-    return () => { document.body.style.overflow = "" }
+    if (!menuOpen) return
+    return lockBodyScroll()
   }, [menuOpen])
 
   const currentTheme = (resolvedTheme as "light" | "dark") ?? "light"
@@ -92,32 +95,30 @@ export function Navbar() {
 
             <div className="flex items-center gap-3">
               <LanguageSwitcher />
-              {mounted && (
-                <AnimatedThemeToggler
-                  variant="circle"
-                  duration={500}
-                  theme={currentTheme}
-                  onThemeChange={(t) => setTheme(t)}
-                  className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-black dark:hover:text-white transition-colors"
-                />
-              )}
+              <AnimatedThemeToggler
+                variant="circle"
+                duration={500}
+                theme={currentTheme}
+                onThemeChange={(t) => setTheme(t)}
+                className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-black dark:hover:text-white transition-colors"
+              />
             </div>
           </div>
 
-          {/* Mobile right side: language + theme toggler + hamburger */}
+          {/* Mobile right side: language + theme toggler + hamburger.
+              These used to be withheld until a `mounted` flag flipped after
+              hydration, so the navbar rendered short and then jumped wider —
+              a layout shift on every single page load. Both controls are now
+              server-renderable, so they're just here from the start. */}
           <div className="flex md:hidden items-center gap-2">
-            {mounted && (
-              <>
-                <LanguageSwitcher />
-                <AnimatedThemeToggler
-                  variant="circle"
-                  duration={500}
-                  theme={currentTheme}
-                  onThemeChange={(t) => setTheme(t)}
-                  className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-black dark:hover:text-white transition-colors"
-                />
-              </>
-            )}
+            <LanguageSwitcher />
+            <AnimatedThemeToggler
+              variant="circle"
+              duration={500}
+              theme={currentTheme}
+              onThemeChange={(t) => setTheme(t)}
+              className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-black dark:hover:text-white transition-colors"
+            />
             <button
               onClick={() => setMenuOpen((v) => !v)}
               aria-label={menuOpen ? "Close menu" : "Open menu"}
@@ -138,7 +139,12 @@ export function Navbar() {
           <div className="absolute inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm" onClick={closeMenu} aria-hidden="true" />
         </div>
       )}
+      {/* `inert` while collapsed: the drawer is only visually hidden (max-h-0 +
+          overflow-hidden), so without it the nav links stayed in the tab order
+          and screen-reader tree, and keyboard focus disappeared into a clipped
+          box on every mobile page. */}
       <div
+        inert={!menuOpen}
         className={`fixed top-14 left-0 right-0 z-40 md:hidden bg-white dark:bg-[#111111] border-b border-gray-200 dark:border-gray-800 transition-all duration-300 overflow-hidden ${
           menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0 pointer-events-none"
         }`}

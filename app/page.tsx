@@ -1,18 +1,28 @@
+import dynamic from "next/dynamic"
 import { Navbar } from "@/components/layout/navbar"
 import { HeroSection } from "@/components/sections/hero-section"
 import { StatsSection } from "@/components/sections/stats-section"
 import { ExperienceSection } from "@/components/sections/experience-section"
-import dynamic from "next/dynamic"
+import { SkillsSection } from "@/components/sections/skills-section"
+import { EducationSection } from "@/components/sections/education-section"
+import { CertificationsSection } from "@/components/sections/certifications-section"
+import { CtaSection } from "@/components/sections/cta-section"
+import { Footer } from "@/components/layout/footer"
 
-const ProjectsSection = dynamic(() => import("@/components/projects-section").then(m => m.ProjectsSection))
-const SkillsSection = dynamic(() => import("@/components/sections/skills-section").then(m => m.SkillsSection))
-const EducationSection = dynamic(() => import("@/components/sections/education-section").then(m => m.EducationSection))
-const CertificationsSection = dynamic(() => import("@/components/sections/certifications-section").then(m => m.CertificationsSection))
-const CtaSection = dynamic(() => import("@/components/sections/cta-section").then(m => m.CtaSection))
-const Footer = dynamic(() => import("@/components/layout/footer").then(m => m.Footer))
+// Only ProjectsSection is worth code-splitting: it's the one section below the
+// fold that is a Client Component, so deferring its chunk actually removes JS
+// from the critical path.
+//
+// The rest are Server Components — they ship zero client JS, so wrapping them
+// in dynamic() saved nothing and cost something: each became a lazy boundary
+// that mounted after hydration, which is what made scroll-reveal sections show
+// up late and need a MutationObserver to catch them.
+const ProjectsSection = dynamic(() =>
+  import("@/components/projects-section").then((m) => m.ProjectsSection)
+)
 
-// Sections are kept synchronous to preserve good initial load time
-// Heavy components within sections (RepoModal, CertificationsCarousel) handle dynamic imports internally
+// Heavy leaf components (RepoModal, CertificationsCarousel) handle their own
+// dynamic imports internally.
 
 export default function Home() {
   return (

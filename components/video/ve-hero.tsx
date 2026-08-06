@@ -21,25 +21,26 @@ export async function VeHero() {
       <span aria-hidden="true" className="hero-particle text-gray-300 dark:text-gray-700" style={{ width: 3, height: 3, left: '88%', bottom: '40%', animationDuration: '9s', animationDelay: '2.2s' }} />
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-8 sm:gap-10">
-        {/* Photo — top center on mobile */}
-        <div className="flex justify-center sm:hidden">
-          <div className="relative w-28 h-28">
+        {/* Single avatar, repositioned with `order` — see hero-section.tsx for
+            why this isn't two hidden/sm:hidden <Image> elements. */}
+        <div className="flex justify-center sm:order-2 sm:justify-end sm:flex-shrink-0">
+          <div className="relative w-28 h-28 sm:w-56 sm:h-56">
             <div className="absolute inset-0 rounded-full bg-gray-100 dark:bg-gray-800" />
             <Image
               src={AVATAR}
-              alt={getCombinedAltText(altTexts.profilePictureMobile)}
+              alt={getCombinedAltText(altTexts.profilePicture)}
               fill
-              sizes="(max-width: 640px) 7rem, 100vw"
+              sizes="(max-width: 640px) 7rem, 14rem"
               className="object-cover rounded-full"
               priority
-              quality={85}
+              quality={80}
               fetchPriority="high"
             />
           </div>
         </div>
 
         {/* ── Left: text content ── */}
-        <div className="flex-1 min-w-0 text-center sm:text-left">
+        <div className="flex-1 min-w-0 text-center sm:text-left sm:order-1">
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3 sm:mb-4">
             {t("videoEditor.heroAvailable")}
           </p>
@@ -75,22 +76,6 @@ export async function VeHero() {
           </div>
         </div>
 
-        {/* ── Right: profile photo (desktop only) ── */}
-        <div className="hidden sm:flex flex-shrink-0 justify-end">
-          <div className="relative w-48 h-48 sm:w-56 sm:h-56">
-            <div className="absolute inset-0 rounded-full bg-gray-100 dark:bg-gray-800" />
-            <Image
-              src={AVATAR}
-              alt={getCombinedAltText(altTexts.profilePictureDesktop)}
-              fill
-              sizes="(max-width: 640px) 12rem, (max-width: 1024px) 14rem, 14rem"
-              className="object-cover rounded-full"
-              priority
-              quality={75}
-              fetchPriority="high"
-            />
-          </div>
-        </div>
       </div>
     </section>
   )

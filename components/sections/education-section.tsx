@@ -1,4 +1,3 @@
-import { GraduationCap } from "lucide-react"
 import { EDUCATION } from "@/data/resume"
 import { getT } from "@/lib/server-language"
 

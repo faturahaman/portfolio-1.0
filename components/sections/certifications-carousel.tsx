@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo, useCallback } from 'react'
+import { useMemo, useCallback, useSyncExternalStore } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import { CERTIFICATIONS } from '@/data/resume'
 import { BadgeCheck } from 'lucide-react'
@@ -21,14 +21,33 @@ export function CertificationsCarousel() {
     dragFree: true,
   })
 
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  const [scrollSnaps, setScrollSnaps] = useState<number[]>([])
+  // Embla is an external store, so read it as one. The previous effect had two
+  // problems: the 'select' handler was never removed (a listener leaked on
+  // every remount), and the snap list was captured once — so resizing the
+  // window, which changes how many cards fit per snap, left a stale row of
+  // dots that no longer matched the carousel.
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => {
+      if (!emblaApi) return () => {}
+      emblaApi.on('select', onStoreChange).on('reInit', onStoreChange)
+      return () => {
+        emblaApi.off('select', onStoreChange).off('reInit', onStoreChange)
+      }
+    },
+    [emblaApi]
+  )
 
-  useEffect(() => {
-    if (!emblaApi) return
-    setScrollSnaps(emblaApi.scrollSnapList())
-    emblaApi.on('select', () => setSelectedIndex(emblaApi.selectedScrollSnap()))
-  }, [emblaApi])
+  // Both snapshots are numbers, so they stay referentially stable across reads.
+  const selectedIndex = useSyncExternalStore(
+    subscribe,
+    () => emblaApi?.selectedScrollSnap() ?? 0,
+    () => 0
+  )
+  const snapCount = useSyncExternalStore(
+    subscribe,
+    () => emblaApi?.scrollSnapList().length ?? 0,
+    () => 0
+  )
 
   const maskStyle = useMemo(
     () => ({ maskImage: MASK_GRADIENT, WebkitMaskImage: MASK_GRADIENT }),
@@ -91,9 +110,9 @@ export function CertificationsCarousel() {
       </div>
 
       {/* Dot indicators */}
-      {scrollSnaps.length > 1 && (
+      {snapCount > 1 && (
         <div className="flex items-center justify-center gap-1.5 pt-1">
-          {scrollSnaps.map((_, i) => (
+          {Array.from({ length: snapCount }, (_, i) => (
             <button
               key={i}
               onClick={() => emblaApi?.scrollTo(i)}

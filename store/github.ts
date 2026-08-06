@@ -38,6 +38,53 @@ interface GithubStore {
 }
 
 const GITHUB_USERNAME = "faturahaman"
+const REPOS_URL = `https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=30&sort=updated`
+
+/** raw.githubusercontent is case-sensitive, so the casing has to be guessed. */
+const README_CANDIDATES = ["README.md", "readme.md", "Readme.md"]
+
+/**
+ * The projects grid renders six cards at once and each wants a cover image, so
+ * six README downloads used to start simultaneously — competing with the hero
+ * image and the app's own chunks for the browser's connection budget while the
+ * page was still loading. Three at a time keeps the covers filling in quickly
+ * without crowding out anything that matters more.
+ */
+const MAX_CONCURRENT_README_FETCHES = 3
+
+let activeReadmeFetches = 0
+const readmeQueue: Array<() => void> = []
+
+function withReadmeConcurrencyLimit<T>(job: () => Promise<T>): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const start = () => {
+      activeReadmeFetches++
+      job()
+        .then(resolve, reject)
+        .finally(() => {
+          activeReadmeFetches--
+          readmeQueue.shift()?.()
+        })
+    }
+
+    if (activeReadmeFetches < MAX_CONCURRENT_README_FETCHES) start()
+    else readmeQueue.push(start)
+  })
+}
+
+/** Returns the first README that exists, or null if none of the casings do. */
+async function fetchFirstReadme(
+  repoFullName: string,
+  branch: string
+): Promise<string | null> {
+  for (const filename of README_CANDIDATES) {
+    const res = await fetch(
+      `https://raw.githubusercontent.com/${repoFullName}/${branch}/${filename}`
+    )
+    if (res.ok) return res.text()
+  }
+  return null
+}
 
 export const useGithubStore = create<GithubStore>((set, get) => ({
   repos: [],
@@ -51,14 +98,19 @@ export const useGithubStore = create<GithubStore>((set, get) => ({
   coverImageCache: {},
 
   fetchRepos: async () => {
-    if (get().reposFetched) return
+    // `reposFetched` alone isn't enough: it only flips once the request has
+    // come back, so two callers mounting in the same tick (or one component in
+    // React Strict Mode) both got past the guard and fired duplicate requests
+    // against an API that allows 60/hour per IP. `reposLoading` closes that gap
+    // while still leaving the error path retryable.
+    const { reposFetched, reposLoading } = get()
+    if (reposFetched || reposLoading) return
 
     set({ reposLoading: true, reposError: null })
     try {
-      const res = await fetch(
-        `https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=30&sort=updated`,
-        { headers: { Accept: "application/vnd.github+json" } }
-      )
+      const res = await fetch(REPOS_URL, {
+        headers: { Accept: "application/vnd.github+json" },
+      })
       if (!res.ok) throw new Error(`GitHub API error: ${res.status}`)
       const data: GithubRepo[] = await res.json()
       const filtered = data
@@ -79,8 +131,12 @@ export const useGithubStore = create<GithubStore>((set, get) => ({
 
   fetchReadme: async (repo: GithubRepo) => {
     const key = repo.full_name
-    // Already cached — skip
-    if (get().readmeCache[key] !== undefined) return
+    const { readmeCache, readmeLoading } = get()
+
+    // Cached, or already on its way. The in-flight half of this check matters:
+    // a card and the modal for the same repo both call this, and the card's
+    // effect can re-run before the first request resolves.
+    if (readmeCache[key] !== undefined || readmeLoading[key]) return
 
     set((s) => ({
       readmeLoading: { ...s.readmeLoading, [key]: true },
@@ -88,23 +144,14 @@ export const useGithubStore = create<GithubStore>((set, get) => ({
     }))
 
     try {
-      const branch = repo.default_branch ?? "main"
-      const candidates = ["README.md", "readme.md", "Readme.md"]
-      let content: string | null = null
-
-      for (const filename of candidates) {
-        const url = `https://raw.githubusercontent.com/${key}/${branch}/${filename}`
-        const res = await fetch(url)
-        if (res.ok) {
-          content = await res.text()
-          break
-        }
-      }
+      // `||` not `??` — the API can return an empty string for default_branch.
+      const branch = repo.default_branch || "main"
+      const content = await withReadmeConcurrencyLimit(() =>
+        fetchFirstReadme(key, branch)
+      )
 
       // Extract cover image from README
-      const coverImage = content
-        ? extractReadmeImage(content, key, branch)
-        : null
+      const coverImage = content ? extractReadmeImage(content, key, branch) : null
 
       set((s) => ({
         readmeCache: { ...s.readmeCache, [key]: content ?? "" },

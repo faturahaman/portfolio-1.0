@@ -1,19 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Outfit } from "next/font/google";
 import "./globals.css";
 import { getServerLanguage } from "@/lib/server-language";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/lib/language-context";
 import { ParallaxScene } from "@/components/parallax-scene";
 import { ScrollProgressBar } from "@/components/scroll-progress-bar";
+import { BASE_URL, OG_IMAGE } from "@/lib/site";
 
-const outfit = Outfit({ 
-  subsets: ["latin"],
-  display: 'swap',
-  variable: '--font-sans',
-});
-
-const BASE_URL = "https://riffatur.com";
+// No webfont. The site renders in Times New Roman, which ships with Windows,
+// macOS, iOS and Android, so there is nothing to download, no FOUT, and no
+// layout shift when a font swaps in. `--font-sans` is defined once, in
+// globals.css. (This file used to also load Outfit from Google Fonts under the
+// *same* variable name, which is what actually won the cascade — see
+// PERFORMANCE_OPTIMIZATIONS.md.)
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -120,28 +119,18 @@ export const metadata: Metadata = {
     siteName: "Riffa Faturahman — Web Developer Portfolio",
     locale: "id_ID",
     alternateLocale: "en_US",
-    images: [
-      {
-        url: `${BASE_URL}/logo-no-bg.png`,
-        width: 512,
-        height: 512,
-        alt: "Riffa Faturahman — Web Developer Freelance Indonesia",
-        type: "image/png",
-      },
-    ],
+    images: [OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "Web Developer Freelance Indonesia | Riffa Faturahman",
     description:
       "Jasa web developer freelance. Spesialis React, Next.js, Laravel, PHP. Open untuk proyek freelance!",
-    images: [`${BASE_URL}/logo-no-bg.png`],
+    images: [OG_IMAGE.url],
     creator: "@faturahaman",
   },
-  icons: {
-    icon: "/logo-no-bg.png",
-    apple: "/logo-no-bg.png",
-  },
+  // Icons come from the app/icon.png and app/apple-icon.png file conventions —
+  // Next emits the <link> tags with correct type/sizes automatically.
   category: "technology",
 };
 
@@ -155,9 +144,9 @@ const personSchema = {
   url: BASE_URL,
   image: {
     "@type": "ImageObject",
-    url: `${BASE_URL}/logo-no-bg.png`,
-    width: 512,
-    height: 512,
+    url: `${BASE_URL}/avatar.webp`,
+    width: 460,
+    height: 460,
   },
   sameAs: [
     "https://github.com/faturahaman",
@@ -329,7 +318,9 @@ const breadcrumbSchema = {
 };
 
 
-// Critical CSS for above-the-fold content (inlined to prevent render-blocking)
+// Critical CSS for above-the-fold content (inlined to prevent render-blocking).
+// The font stack here must match `--font-sans` in globals.css — this is what
+// paints first, so any disagreement between the two shows up as a reflow.
 const criticalCSS = `
   :root {
     --background: #ffffff;
@@ -359,6 +350,12 @@ const criticalCSS = `
   }
 `;
 
+// Runs before the body is parsed. Scroll-reveal styles start at `opacity: 0`
+// and are only un-hidden by JS, so without this gate a visitor with JS disabled
+// (or a non-executing crawler) gets a completely blank page. Scoping the hidden
+// state to `.js` makes "no JS" degrade to "no animation" instead of "no site".
+const jsEnabledFlag = `document.documentElement.classList.add('js')`;
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -369,25 +366,24 @@ export default async function RootLayout({
   return (
     <html
       lang={lang}
-      className={`h-full antialiased ${outfit.variable}`}
+      className="h-full antialiased"
       suppressHydrationWarning
     >
       <head>
         {/* Inline critical CSS to prevent render-blocking */}
         <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
+        <script dangerouslySetInnerHTML={{ __html: jsEnabledFlag }} />
 
-        {/* Preload the LCP hero image (locally-hosted avatar) */}
-        <link
-          rel="preload"
-          as="image"
-          href="/avatar.webp"
-          type="image/webp"
-          fetchPriority="high"
-        />
+        {/*
+          No manual preload for the avatar: <Image priority> emits its own
+          preload pointing at /_next/image?url=… . A hand-written preload of the
+          raw /avatar.webp downloads a file the page never actually requests.
+        */}
 
-        {/* DNS prefetch for GitHub hosts used by below-the-fold project cards */}
-        <link rel="dns-prefetch" href="https://api.github.com" />
-        <link rel="dns-prefetch" href="https://raw.githubusercontent.com" />
+        {/* Warm up the GitHub hosts the projects section hits on mount.
+            preconnect (DNS + TCP + TLS) rather than dns-prefetch (DNS only). */}
+        <link rel="preconnect" href="https://api.github.com" />
+        <link rel="preconnect" href="https://raw.githubusercontent.com" />
 
         {/* JSON-LD: Person — core entity for Knowledge Panel */}
         <script

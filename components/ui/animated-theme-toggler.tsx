@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useRef } from "react"
 import { Moon, Sun } from "lucide-react"
 import { flushSync } from "react-dom"
 
@@ -137,27 +137,11 @@ export const AnimatedThemeToggler = ({
   const shape = variant ?? "circle"
   const transitionDuration = Math.max(duration, 620)
   const isControlled = theme !== undefined
-  const [internalIsDark, setInternalIsDark] = useState(false)
-  const isDark = isControlled ? theme === "dark" : internalIsDark
   const buttonRef = useRef<HTMLButtonElement>(null)
 
-  useEffect(() => {
-    if (isControlled) return
-
-    const updateTheme = () => {
-      setInternalIsDark(document.documentElement.classList.contains("dark"))
-    }
-
-    updateTheme()
-
-    const observer = new MutationObserver(updateTheme)
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    })
-
-    return () => observer.disconnect()
-  }, [isControlled])
+  // No mirrored `isDark` state and no MutationObserver on <html>: the icon is
+  // chosen in CSS from the `dark` class and the click handler reads that class
+  // directly, so there is nothing left for React to keep in sync.
 
   const toggleTheme = useCallback(() => {
     const button = buttonRef.current
@@ -187,13 +171,16 @@ export const AnimatedThemeToggler = ({
     )
 
     const applyTheme = () => {
-      const newTheme = !isDark
-      document.documentElement.classList.toggle("dark")
+      // Derive from the DOM rather than from `isDark`. The class on <html> is
+      // the single source of truth (next-themes' pre-hydration script writes it
+      // before React runs), so reading it here can't disagree with what the
+      // user is actually looking at.
+      const nextIsDark = !document.documentElement.classList.contains("dark")
+      document.documentElement.classList.toggle("dark", nextIsDark)
       if (isControlled) {
-        onThemeChange?.(newTheme ? "dark" : "light")
+        onThemeChange?.(nextIsDark ? "dark" : "light")
       } else {
-        setInternalIsDark(newTheme)
-        localStorage.setItem("theme", newTheme ? "dark" : "light")
+        localStorage.setItem("theme", nextIsDark ? "dark" : "light")
       }
     }
 
@@ -247,7 +234,7 @@ export const AnimatedThemeToggler = ({
         )
       })
     }
-  }, [shape, fromCenter, transitionDuration, isDark, isControlled, onThemeChange])
+  }, [shape, fromCenter, transitionDuration, isControlled, onThemeChange])
 
   return (
     <button
@@ -257,7 +244,15 @@ export const AnimatedThemeToggler = ({
       className={cn(className)}
       {...props}
     >
-      {isDark ? <Sun /> : <Moon />}
+      {/*
+        Both icons render; CSS picks one off the `dark` class that next-themes
+        writes to <html> before hydration. Branching in JS instead meant the
+        server had no way to know the theme, so the whole control had to be
+        withheld behind a `mounted` flag — which made the navbar reflow on
+        every page load. This way the button is in the very first paint.
+      */}
+      <Moon className="dark:hidden" aria-hidden="true" />
+      <Sun className="hidden dark:block" aria-hidden="true" />
       <span className="sr-only">Toggle theme</span>
     </button>
   )

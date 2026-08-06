@@ -9,23 +9,36 @@ import { X, Star, GitFork, ExternalLink, Globe } from "lucide-react"
 import { getCombinedAltText, altTexts } from "@/lib/alt-text"
 import { LANG_COLORS, timeAgo } from "@/lib/github-utils"
 import { useLanguage } from "@/lib/language-context"
+import { lockBodyScroll } from "@/lib/scroll-lock"
 
 interface RepoModalProps {
   repo: GithubRepo
   onClose: () => void
 }
 
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
+
 export function RepoModal({ repo, onClose }: RepoModalProps) {
   const { t } = useLanguage()
-  const { readmeCache, readmeLoading, coverImageCache, fetchReadme } = useGithubStore()
   const key = repo.full_name
-  const readme = readmeCache[key]
-  const loading = readmeLoading[key]
-  const coverImage = coverImageCache[key]
+
+  // Field-level selectors instead of the whole store — otherwise every README
+  // that resolves anywhere on the page re-renders this markdown tree.
+  const readme = useGithubStore((s) => s.readmeCache[key])
+  const coverImage = useGithubStore((s) => s.coverImageCache[key])
+  const fetchReadme = useGithubStore((s) => s.fetchReadme)
+
+  // "Not in the cache yet" is the honest loading condition. `readmeLoading[key]`
+  // is still undefined during the tick between mount and the fetch starting,
+  // which briefly rendered the "no README" empty state before the skeleton.
+  const loading = readme === undefined
+
   const [failedCoverImage, setFailedCoverImage] = useState<string | null>(null)
   const [isOpen, setIsOpen] = useState(false)
 
   const overlayRef = useRef<HTMLDivElement>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const handleClose = useCallback(() => {
@@ -39,15 +52,50 @@ export function RepoModal({ repo, onClose }: RepoModalProps) {
   }, [repo, fetchReadme])
 
   useEffect(() => {
-    document.body.style.overflow = "hidden"
+    const releaseScroll = lockBodyScroll()
     return () => {
-      document.body.style.overflow = ""
+      releaseScroll()
       if (closeTimerRef.current) clearTimeout(closeTimerRef.current)
     }
   }, [])
 
+  // Move focus into the dialog on open and hand it back to whatever opened it
+  // on close. Without this, `aria-modal` was a claim the markup didn't honour:
+  // keyboard focus stayed on the page behind the overlay.
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") handleClose() }
+    const previouslyFocused = document.activeElement as HTMLElement | null
+    const firstFocusable =
+      dialogRef.current?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR)
+    firstFocusable?.focus()
+    return () => previouslyFocused?.focus?.()
+  }, [])
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleClose()
+        return
+      }
+      if (e.key !== "Tab") return
+
+      const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
+        FOCUSABLE_SELECTOR
+      )
+      if (!focusable || focusable.length === 0) return
+
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      const active = document.activeElement
+
+      // Wrap at the edges so Tab can't walk out into the page behind.
+      if (e.shiftKey && (active === first || !dialogRef.current?.contains(active))) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
     window.addEventListener("keydown", handler)
     return () => window.removeEventListener("keydown", handler)
   }, [handleClose])
@@ -76,6 +124,7 @@ export function RepoModal({ repo, onClose }: RepoModalProps) {
       aria-labelledby="modal-title"
     >
       <div
+        ref={dialogRef}
         className={`relative w-full sm:max-w-[1100px] h-[92dvh] sm:h-[88dvh] bg-white dark:bg-[#121212] rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col sm:flex-row overflow-hidden will-change-transform transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
           isOpen
             ? "translate-y-0 scale-100 opacity-100"

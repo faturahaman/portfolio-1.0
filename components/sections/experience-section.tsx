@@ -41,7 +41,10 @@ const EXPERIENCE_ID: ExperienceEntry[] = [
       "Mempertahankan tingkat pengiriman proyek 100% tepat waktu",
       "Berkolaborasi dengan klien untuk menerjemahkan kebutuhan menjadi solusi teknis yang scalable",
     ],
-    highlights: { 1: "80–95+ PageSpeed score", 3: "100% tepat waktu" },
+    // Must be a literal substring of its bullet — the renderer highlights via
+    // `bullet.split(highlight)`, so a phrase that isn't present silently
+    // renders no highlight at all (this one used the English wording).
+    highlights: { 1: "80–95+", 3: "100% tepat waktu" },
     tags: ["JavaScript", "PHP", "MySQL", "Performance", "API Integration"],
   },
 ]

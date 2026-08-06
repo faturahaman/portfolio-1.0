@@ -18,6 +18,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  /* The one place the site's typeface is decided. It used to be declared here
+     *and* by next/font (which loaded Outfit under this same variable name), so
+     which one actually rendered came down to cascade-layer ordering between two
+     files. next/font is gone; this is now the only declaration.
+     Keep `body` in layout.tsx's inlined critical CSS in sync with this. */
   --font-sans: "Times New Roman", Times, serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
@@ -29,7 +34,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Times New Roman", Times, serif;
+  font-family: var(--font-sans);
   margin: 0;
   padding: 0;
 }
@@ -107,8 +112,13 @@ html {
    Reveals once when the section scrolls into view, then STAYS visible.
    Previously used a view-timeline keyframe that was only opaque while the
    section sat in the middle of the viewport — on short pages the lower
-   sections never reached the middle and got stuck transparent. */
-.scroll-fade-section {
+   sections never reached the middle and got stuck transparent.
+
+   Scoped to `html.js` (set by an inline script in the document head): the
+   hidden start state is only safe to apply when there is JS around to remove
+   it, otherwise a visitor with scripting disabled — or a crawler that doesn't
+   execute JS — is served an entirely blank page. */
+.js .scroll-fade-section {
   opacity: 0;
   transform: translate3d(0, -24px, 0) scale(0.98);
   transform-origin: center;
@@ -118,11 +128,11 @@ html {
 
 /* will-change only while pending — dropped once revealed so the GPU layer
    is released and doesn't linger (cheaper on mobile). */
-.scroll-fade-section:not(.is-visible) {
+.js .scroll-fade-section:not(.is-visible) {
   will-change: opacity, transform;
 }
 
-.scroll-fade-section.is-visible {
+.js .scroll-fade-section.is-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0) scale(1);
 }
@@ -253,8 +263,9 @@ html {
   .parallax-blob-3 { animation: blob-float-3 22s ease-in-out infinite; }
 }
 
-/* ── Staggered child reveal (IntersectionObserver driven) ── */
-.reveal-child {
+/* ── Staggered child reveal (IntersectionObserver driven) ──
+   `.js`-scoped for the same reason as .scroll-fade-section above. */
+.js .reveal-child {
   opacity: 0;
   transform: translate3d(0, 24px, 0);
   transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
@@ -262,11 +273,11 @@ html {
 }
 
 /* Hint only while pending; released after the one-shot reveal. */
-.reveal-child:not(.is-visible) {
+.js .reveal-child:not(.is-visible) {
   will-change: opacity, transform;
 }
 
-.reveal-child.is-visible {
+.js .reveal-child.is-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0);
 }
@@ -328,14 +339,14 @@ html {
 }
 
 /* ── Section heading slide-in ── */
-.section-heading-reveal {
+.js .section-heading-reveal {
   opacity: 0;
   transform: translate3d(-16px, 0, 0);
   transition: opacity 0.5s cubic-bezier(0.22,1,0.36,1),
               transform 0.5s cubic-bezier(0.22,1,0.36,1);
 }
 
-.section-heading-reveal.is-visible {
+.js .section-heading-reveal.is-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0);
 }

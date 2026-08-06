@@ -2,14 +2,17 @@ import type { Metadata } from "next"
 import dynamic from "next/dynamic"
 import { Navbar } from "@/components/layout/navbar"
 import { VeHero } from "@/components/video/ve-hero"
+import { VeSkillsSection } from "@/components/video/ve-skills-section"
+import { VeProcessSection } from "@/components/video/ve-process-section"
+import { VeCtaSection } from "@/components/video/ve-cta-section"
+import { Footer } from "@/components/layout/footer"
+import { BASE_URL, OG_IMAGE } from "@/lib/site"
 
-const VeReelSection = dynamic(() => import("@/components/video/ve-reel-section").then(m => m.VeReelSection))
-const VeSkillsSection = dynamic(() => import("@/components/video/ve-skills-section").then(m => m.VeSkillsSection))
-const VeProcessSection = dynamic(() => import("@/components/video/ve-process-section").then(m => m.VeProcessSection))
-const VeCtaSection = dynamic(() => import("@/components/video/ve-cta-section").then(m => m.VeCtaSection))
-const Footer = dynamic(() => import("@/components/layout/footer").then(m => m.Footer))
+// Same reasoning as app/page.tsx: only the Client Component is worth splitting.
+const VeReelSection = dynamic(() =>
+  import("@/components/video/ve-reel-section").then((m) => m.VeReelSection)
+)
 
-const BASE_URL = "https://riffatur.com"
 const PAGE_URL = `${BASE_URL}/video-editor`
 
 export const metadata: Metadata = {
@@ -56,22 +59,14 @@ export const metadata: Metadata = {
     siteName: "Riffa Faturahman — Video Editor Portfolio",
     locale: "id_ID",
     alternateLocale: "en_US",
-    images: [
-      {
-        url: `${BASE_URL}/logo-no-bg.png`,
-        width: 512,
-        height: 512,
-        alt: "Riffa Faturahman — Video Editor Freelance Indonesia",
-        type: "image/png",
-      },
-    ],
+    images: [OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "Jasa Video Editor Freelance Indonesia | Riffa Faturahman",
     description:
       "Motion graphic, cinematic editing, reels & color grading dengan Alight Motion, After Effects & Premiere Pro.",
-    images: [`${BASE_URL}/logo-no-bg.png`],
+    images: [OG_IMAGE.url],
     creator: "@faturahaman",
   },
   category: "video",
@@ -84,7 +79,7 @@ const videoServiceSchema = {
   "@id": `${PAGE_URL}/#service`,
   name: "Riffa Faturahman — Video Editing Services",
   url: PAGE_URL,
-  image: `${BASE_URL}/logo-no-bg.png`,
+  image: OG_IMAGE.url,
   description:
     "Jasa video editor freelance Indonesia: motion graphic, cinematic editing, reels & shorts, dan color grading menggunakan Alight Motion, After Effects, dan Premiere Pro.",
   areaServed: { "@type": "Country", name: "Indonesia" },

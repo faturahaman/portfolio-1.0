@@ -1,10 +1,10 @@
 "use client"
 
-import { useEffect, useState, Suspense } from "react"
+import { memo, useCallback, useEffect, useState, Suspense } from "react"
 import { useGithubStore, type GithubRepo } from "@/store/github"
-import { Star, GitFork, AlertCircle, RefreshCw, Globe, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
+import { Star, GitFork, AlertCircle, RefreshCw, Globe, ChevronLeft, ChevronRight } from "lucide-react"
 import { useLanguage } from "@/lib/language-context"
-import { LANG_COLORS, timeAgo } from "@/lib/github-utils"
+import { LANG_COLORS, timeAgo, buildPageNumbers } from "@/lib/github-utils"
 
 import dynamic from "next/dynamic"
 
@@ -14,30 +14,55 @@ const RepoModal = dynamic(() =>
   { ssr: false }
 )
 
+const PER_PAGE = 6
+
+/**
+ * Run `task` once the browser is idle, returning a cancel function.
+ * Falls back to a short timeout on browsers without requestIdleCallback.
+ */
+function onIdle(task: () => void): () => void {
+  if (typeof window.requestIdleCallback === "function") {
+    const id = window.requestIdleCallback(task, { timeout: 2000 })
+    return () => window.cancelIdleCallback(id)
+  }
+  const id = window.setTimeout(task, 200)
+  return () => window.clearTimeout(id)
+}
+
 /** Card — Medium-style: typography-first, cover thumbnail right, minimal meta */
-function RepoCard({
+const RepoCard = memo(function RepoCard({
   repo,
-  onClick,
+  onSelect,
   t,
 }: {
   repo: GithubRepo
-  onClick: () => void
+  onSelect: (repo: GithubRepo) => void
   t: (key: string) => string
 }) {
-  const { coverImageCache, readmeCache, fetchReadme } = useGithubStore()
   const key = repo.full_name
-  const coverImage = coverImageCache[key]
-  const isReadmeFetched = readmeCache[key] !== undefined
-  const [imgError, setImgError] = useState(false)
+
+  // Narrow selectors, not the whole store. Subscribing to the entire store made
+  // every card re-render each time *any* repo's README resolved — six cards
+  // times twelve store writes on a single page view.
+  const coverImage = useGithubStore((s) => s.coverImageCache[key])
+  const isReadmeFetched = useGithubStore((s) => s.readmeCache[key] !== undefined)
+  const fetchReadme = useGithubStore((s) => s.fetchReadme)
+
+  // Track *which* URL failed rather than a boolean, so a new cover image is
+  // retried without needing an effect to reset the flag.
+  const [failedCover, setFailedCover] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!isReadmeFetched) fetchReadme(repo)
+    if (isReadmeFetched) return
+    // Cover images are decorative. Let the browser get through the work that
+    // actually moves LCP and TTI before spending connections on README bodies.
+    return onIdle(() => {
+      fetchReadme(repo)
+    })
   }, [repo, isReadmeFetched, fetchReadme])
 
-  useEffect(() => { setImgError(false) }, [coverImage])
-
   const langColor = repo.language ? LANG_COLORS[repo.language] ?? "#8b949e" : null
-  const showCover = Boolean(coverImage && !imgError)
+  const showCover = Boolean(coverImage) && coverImage !== failedCover
 
   return (
     <div
@@ -46,10 +71,16 @@ function RepoCard({
         border-b border-gray-100 dark:border-gray-800/60
         hover:border-gray-200 dark:hover:border-gray-700
         transition-colors duration-200"
-      onClick={onClick}
+      onClick={() => onSelect(repo)}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onClick() }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          // Without this, Space scrolls the page as well as opening the modal.
+          e.preventDefault()
+          onSelect(repo)
+        }
+      }}
     >
       {/* ── Left: text content ── */}
       <div className="flex flex-col justify-between flex-1 min-w-0">
@@ -141,8 +172,9 @@ function RepoCard({
               className="absolute inset-0 w-full h-full object-cover
                 transition-transform duration-500 ease-out
                 group-hover:scale-105"
-              onError={() => setImgError(true)}
+              onError={() => setFailedCover(coverImage ?? null)}
               loading="lazy"
+              decoding="async"
             />
           </div>
         </div>
@@ -169,42 +201,64 @@ function RepoCard({
       )}
     </div>
   )
+})
+
+function RepoSkeleton() {
+  return (
+    <div className="flex flex-col">
+      {Array.from({ length: PER_PAGE }).map((_, i) => (
+        <div
+          key={i}
+          className="animate-pulse flex flex-row items-start gap-4 py-5 border-b border-gray-100 dark:border-gray-800/60"
+        >
+          <div className="flex flex-col gap-2 flex-1">
+            <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-1/4" />
+            <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-3/4" />
+            <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-full" />
+            <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-2/3" />
+            <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-1/3 mt-1" />
+          </div>
+          <div className="flex-shrink-0 w-[100px] sm:w-[130px] aspect-[4/3] bg-gray-100 dark:bg-gray-800 rounded-md" />
+        </div>
+      ))}
+    </div>
+  )
 }
 
 export function ProjectsSection() {
   const { t } = useLanguage()
-  const { repos, reposFetched, reposLoading, reposError, fetchRepos } = useGithubStore()
+
+  const repos = useGithubStore((s) => s.repos)
+  const reposFetched = useGithubStore((s) => s.reposFetched)
+  const reposError = useGithubStore((s) => s.reposError)
+  const fetchRepos = useGithubStore((s) => s.fetchRepos)
+
   const [selectedRepo, setSelectedRepo] = useState<GithubRepo | null>(null)
   const [page, setPage] = useState(1)
 
-  const PER_PAGE = 6
-  const totalPages = Math.ceil(repos.length / PER_PAGE)
-  const start = (page - 1) * PER_PAGE
+  const totalPages = Math.max(1, Math.ceil(repos.length / PER_PAGE))
+  // Clamp during render instead of resetting from an effect. If the repo list
+  // shrinks while the user sits on a high page, they land on the last valid
+  // page immediately rather than seeing one empty frame first.
+  const currentPage = Math.min(page, totalPages)
+  const start = (currentPage - 1) * PER_PAGE
   const visible = repos.slice(start, start + PER_PAGE)
 
   useEffect(() => { fetchRepos() }, [fetchRepos])
 
-  // Reset to page 1 when repos change
-  useEffect(() => { setPage(1) }, [repos.length])
-
-  function goTo(p: number) {
+  const goTo = useCallback((p: number) => {
     setPage(p)
     // Scroll section back into view smoothly
     document.getElementById("projects")?.scrollIntoView({ behavior: "smooth", block: "start" })
-  }
+  }, [])
 
-  // Build page number list with ellipsis
-  function pageNumbers(): (number | "…")[] {
-    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1)
-    const pages: (number | "…")[] = [1]
-    if (page > 3) pages.push("…")
-    for (let p = Math.max(2, page - 1); p <= Math.min(totalPages - 1, page + 1); p++) {
-      pages.push(p)
-    }
-    if (page < totalPages - 2) pages.push("…")
-    pages.push(totalPages)
-    return pages
-  }
+  const handleSelect = useCallback((repo: GithubRepo) => setSelectedRepo(repo), [])
+  const handleClose = useCallback(() => setSelectedRepo(null), [])
+
+  // The skeleton also covers the first render, before the effect has had a
+  // chance to flip `reposLoading` — previously that tick rendered nothing.
+  const isLoading = !reposFetched && !reposError
+  const isEmpty = reposFetched && repos.length === 0
 
   return (
     <section id="projects" className="py-16 border-b border-gray-200 dark:border-gray-800">
@@ -220,25 +274,7 @@ export function ProjectsSection() {
       </div>
 
       {/* Loading skeleton — Medium-style single column */}
-      {reposLoading && (
-        <div className="flex flex-col">
-          {Array.from({ length: PER_PAGE }).map((_, i) => (
-            <div
-              key={i}
-              className="animate-pulse flex flex-row items-start gap-4 py-5 border-b border-gray-100 dark:border-gray-800/60"
-            >
-              <div className="flex flex-col gap-2 flex-1">
-                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-1/4" />
-                <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-3/4" />
-                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-full" />
-                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-2/3" />
-                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-1/3 mt-1" />
-              </div>
-              <div className="flex-shrink-0 w-[100px] sm:w-[130px] aspect-[4/3] bg-gray-100 dark:bg-gray-800 rounded-md" />
-            </div>
-          ))}
-        </div>
-      )}
+      {isLoading && <RepoSkeleton />}
 
       {/* Error */}
       {reposError && (
@@ -258,15 +294,22 @@ export function ProjectsSection() {
         </div>
       )}
 
+      {/* Fetched successfully but nothing to show */}
+      {isEmpty && (
+        <p className="py-16 text-center text-sm text-gray-500 dark:text-gray-400">
+          {t("projects.noDescription")}
+        </p>
+      )}
+
       {/* Repo grid */}
-      {!reposLoading && !reposError && repos.length > 0 && (
+      {!isLoading && !reposError && repos.length > 0 && (
         <>
           <div className="flex flex-col">
             {visible.map((repo) => (
               <RepoCard
                 key={repo.id}
                 repo={repo}
-                onClick={() => setSelectedRepo(repo)}
+                onSelect={handleSelect}
                 t={t}
               />
             ))}
@@ -277,8 +320,8 @@ export function ProjectsSection() {
             <div className="mt-10 flex items-center justify-center gap-1">
               {/* Prev */}
               <button
-                onClick={() => goTo(page - 1)}
-                disabled={page === 1}
+                onClick={() => goTo(currentPage - 1)}
+                disabled={currentPage === 1}
                 aria-label="Previous page"
                 className="w-9 h-9 flex items-center justify-center rounded-full
                   border border-gray-200 dark:border-gray-700
@@ -292,7 +335,7 @@ export function ProjectsSection() {
               </button>
 
               {/* Page numbers */}
-              {pageNumbers().map((p, i) =>
+              {buildPageNumbers(currentPage, totalPages).map((p, i) =>
                 p === "…" ? (
                   <span
                     key={`ellipsis-${i}`}
@@ -305,9 +348,9 @@ export function ProjectsSection() {
                     key={p}
                     onClick={() => goTo(p)}
                     aria-label={`Page ${p}`}
-                    aria-current={p === page ? "page" : undefined}
+                    aria-current={p === currentPage ? "page" : undefined}
                     className={`w-9 h-9 flex items-center justify-center rounded-full text-sm font-medium transition-all
-                      ${p === page
+                      ${p === currentPage
                         ? "bg-black dark:bg-white text-white dark:text-black"
                         : "border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-black dark:hover:text-white"
                       }`}
@@ -319,8 +362,8 @@ export function ProjectsSection() {
 
               {/* Next */}
               <button
-                onClick={() => goTo(page + 1)}
-                disabled={page === totalPages}
+                onClick={() => goTo(currentPage + 1)}
+                disabled={currentPage === totalPages}
                 aria-label="Next page"
                 className="w-9 h-9 flex items-center justify-center rounded-full
                   border border-gray-200 dark:border-gray-700
@@ -340,7 +383,7 @@ export function ProjectsSection() {
       {/* Modal — wrapped in Suspense for lazy loading */}
       {selectedRepo && (
         <Suspense fallback={null}>
-          <RepoModal repo={selectedRepo} onClose={() => setSelectedRepo(null)} />
+          <RepoModal repo={selectedRepo} onClose={handleClose} />
         </Suspense>
       )}
     </section>

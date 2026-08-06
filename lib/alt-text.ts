@@ -4,11 +4,10 @@
  */
 
 export const altTexts = {
-  profilePictureMobile: {
-    en: "Muhamad Riffa Faturahman - Web Developer Portfolio Profile Picture",
-    id: "Muhamad Riffa Faturahman - Foto Profil Portfolio Web Developer",
-  },
-  profilePictureDesktop: {
+  // One entry, not a mobile/desktop pair: the hero renders a single <Image>
+  // that's repositioned with CSS, and the same picture should describe itself
+  // the same way at every breakpoint.
+  profilePicture: {
     en: "Muhamad Riffa Faturahman - Professional Web Developer Portrait",
     id: "Muhamad Riffa Faturahman - Potret Profesional Web Developer",
   },

@@ -1,25 +1,16 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useLanguage } from '@/lib/language-context'
 
+/**
+ * No `mounted` guard here on purpose. The language comes from a cookie that the
+ * server layout reads and hands to LanguageProvider as `initialLanguage`, so
+ * server and client render identical markup — there was never a hydration
+ * mismatch to protect against. The guard only produced a visible flash where
+ * neither EN nor ID looked selected until after hydration.
+ */
 export function LanguageSwitcher() {
   const { language, setLanguage } = useLanguage()
-  const [mounted, setMounted] = useState(false)
-
-  // Prevent hydration mismatch
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return (
-      <div className="flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-gray-900/50">
-        <div className="px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 dark:text-gray-400">EN</div>
-        <div className="px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 dark:text-gray-400">ID</div>
-      </div>
-    )
-  }
 
   return (
     <div className="flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-gray-900/50">

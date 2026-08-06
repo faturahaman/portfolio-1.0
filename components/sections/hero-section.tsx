@@ -23,25 +23,30 @@ export async function HeroSection() {
       <span aria-hidden="true" className="hero-particle text-gray-400 dark:text-gray-600" style={{ width: 5, height: 5, left: '50%', bottom: '15%', animationDuration: '7.5s', animationDelay: '3s' }} />
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-8 sm:gap-10">
 
-        {/* Photo — top center on mobile */}
-        <div className="flex justify-center sm:hidden">
-          <div className="relative w-28 h-28">
+        {/* Photo — above the text on mobile, to its right on desktop.
+            This used to be two separate <Image priority> elements toggled with
+            hidden/sm:hidden. Both stayed in the DOM, so the browser preloaded
+            two avatars (at two different `quality` values, so they couldn't
+            even share an optimizer cache entry) and only ever painted one.
+            One element + `order` gives the same layout for half the bytes. */}
+        <div className="flex justify-center sm:order-2 sm:justify-end sm:flex-shrink-0">
+          <div className="relative w-28 h-28 sm:w-56 sm:h-56">
             <div className="absolute inset-0 rounded-full bg-gray-100 dark:bg-gray-800" />
             <Image
               src={GITHUB_AVATAR}
-              alt={getCombinedAltText(altTexts.profilePictureMobile)}
+              alt={getCombinedAltText(altTexts.profilePicture)}
               fill
-              sizes="(max-width: 640px) 7rem, 100vw"
+              sizes="(max-width: 640px) 7rem, 14rem"
               className="object-cover rounded-full"
               priority
-              quality={85}
+              quality={80}
               fetchPriority="high"
             />
           </div>
         </div>
 
         {/* ── Left: text content ── */}
-        <div className="flex-1 min-w-0 text-center sm:text-left">
+        <div className="flex-1 min-w-0 text-center sm:text-left sm:order-1">
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3 sm:mb-4">
             {t("hero.availableForWork")}
           </p>
@@ -91,23 +96,6 @@ export async function HeroSection() {
               </svg>
               LinkedIn
             </a>
-          </div>
-        </div>
-
-        {/* ── Right: profile photo (desktop only) ── */}
-        <div className="hidden sm:flex flex-shrink-0 justify-end">
-          <div className="relative w-48 h-48 sm:w-56 sm:h-56">
-            <div className="absolute inset-0 rounded-full bg-gray-100 dark:bg-gray-800" />
-            <Image
-              src={GITHUB_AVATAR}
-              alt={getCombinedAltText(altTexts.profilePictureDesktop)}
-              fill
-              sizes="(max-width: 640px) 12rem, (max-width: 1024px) 14rem, 14rem"
-              className="object-cover rounded-full"
-              priority
-              quality={75}
-              fetchPriority="high"
-            />
           </div>
         </div>
 

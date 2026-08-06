@@ -15,6 +15,15 @@ function toEmbedUrl(url: string): { src: string | null; kind: "iframe" | "link" 
 
   try {
     const u = new URL(url)
+
+    // `new URL()` happily parses `javascript:`, `data:` and friends, and the
+    // unknown-host branch below feeds whatever it gets straight into an iframe
+    // `src`. The data file is hand-written today, but that's one typo away
+    // from being a problem, so gate on the scheme up front.
+    if (u.protocol !== "https:" && u.protocol !== "http:") {
+      return { src: null, kind: "placeholder" }
+    }
+
     const host = u.hostname.replace(/^www\./, "")
 
     // YouTube — watch?v=, youtu.be/, shorts/

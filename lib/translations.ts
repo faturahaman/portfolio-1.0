@@ -175,16 +175,21 @@ export type LanguageCode = 'en' | 'id'
  * Get translated text
  */
 export function t(path: string, language: LanguageCode = 'en'): string {
-  const keys = path.split('.')
-  let value: any = translations
+  let value: unknown = translations
 
-  for (const key of keys) {
-    value = value?.[key]
+  for (const key of path.split('.')) {
+    // `typeof null === 'object'`, so the old version's `'en' in value` check
+    // would have thrown on a null node rather than falling through to ''.
+    if (typeof value !== 'object' || value === null) return ''
+    value = (value as Record<string, unknown>)[key]
   }
 
-  if (typeof value === 'object' && 'en' in value && 'id' in value) {
-    return value[language] || value.en || ''
+  if (typeof value === 'string') return value
+
+  if (typeof value === 'object' && value !== null && 'en' in value && 'id' in value) {
+    const entry = value as Record<LanguageCode, string>
+    return entry[language] || entry.en || ''
   }
 
-  return typeof value === 'string' ? value : ''
+  return ''
 }
